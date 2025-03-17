@@ -14,15 +14,29 @@ UUID_PATTERN = r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 # Common date pattern
 DATE_PATTERN = r'^\d{4}-\d{2}-\d{2}$'
 
-# Custom check functions
-def validate_date_range(series: pd.Series, min_date: str = '1900-01-01', max_date: str = None) -> pd.Series:
+# Common check functions
+def validate_date_range(series: pd.Series, min_date: str = '1900-01-01', max_date: str = '2099-12-31') -> pd.Series:
+    """Validate that dates are within a specified range."""
     try:
         dates = pd.to_datetime(series, format='%Y-%m-%d')
         min_dt = pd.to_datetime(min_date)
-        max_dt = pd.to_datetime(max_date) if max_date else pd.to_datetime('today')
+        max_dt = pd.to_datetime(max_date)
         return (dates >= min_dt) & (dates <= max_dt)
     except ValueError:
         return pd.Series([False] * len(series))
+
+def validate_effective_dates(df: pd.DataFrame) -> pd.Series:
+    """Validate that EFFECTIVE_TO is not before EFFECTIVE_FROM."""
+    try:
+        from_dates = pd.to_datetime(df['EFFECTIVE_FROM'], format='%Y-%m-%d')
+        to_dates = pd.to_datetime(df['EFFECTIVE_TO'], format='%Y-%m-%d')
+        return to_dates >= from_dates
+    except ValueError:
+        return pd.Series([False] * len(df))
+
+def validate_birth_date(series: pd.Series) -> pd.Series:
+    """Validate birth dates are reasonable (not in future, not too old)."""
+    return validate_date_range(series, min_date='1900-01-01', max_date=datetime.now().strftime('%Y-%m-%d'))
 
 def validate_contact_value(df: pd.DataFrame) -> pd.Series:
     def check_value(row):
@@ -47,14 +61,22 @@ workers_schema = pa.DataFrameSchema({
     'FIRST_NAME': pa.Column(str, checks=[pa.Check.str_length(min_value=2, max_value=50)]),
     'LAST_NAME': pa.Column(str, checks=[pa.Check.str_length(min_value=2, max_value=50)]),
     'BIRTH_DATE': pa.Column(str, checks=[
-        pa.Check(lambda x: validate_date_range(x), error="Birth date must be between 1900-01-01 and current date")
+        pa.Check(lambda x: validate_birth_date(x), error="Birth date must be between 1900-01-01 and current date")
     ]),
     'SEX': pa.Column(str, checks=[pa.Check.isin(['M', 'F', 'O'])]),
     'MARITAL_STATUS': pa.Column(str, checks=[pa.Check.isin(['S', 'M', 'D', 'W'])]),
     'NATIONALITY': pa.Column(str, checks=[pa.Check.str_length(min_value=2, max_value=3)]),
-    'EFFECTIVE_FROM': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')]),
-    'EFFECTIVE_TO': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')])
-})
+    'EFFECTIVE_FROM': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective from date must be between 1900-01-01 and 2099-12-31")
+    ]),
+    'EFFECTIVE_TO': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective to date must be between 1900-01-01 and 2099-12-31")
+    ])
+}, checks=[
+    pa.Check(validate_effective_dates, error="EFFECTIVE_TO date must not be before EFFECTIVE_FROM date")
+])
 
 addresses_schema = pa.DataFrameSchema({
     'UNIQUE_ID': pa.Column(str, checks=[
@@ -70,9 +92,17 @@ addresses_schema = pa.DataFrameSchema({
     'STATE': pa.Column(str, checks=[pa.Check.str_length(min_value=1, max_value=50)]),
     'POSTAL_CODE': pa.Column(str, checks=[pa.Check.str_length(min_value=1, max_value=20)]),
     'COUNTRY': pa.Column(str, checks=[pa.Check.str_length(min_value=2, max_value=3)]),
-    'EFFECTIVE_FROM': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')]),
-    'EFFECTIVE_TO': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')])
-})
+    'EFFECTIVE_FROM': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective from date must be between 1900-01-01 and 2099-12-31")
+    ]),
+    'EFFECTIVE_TO': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective to date must be between 1900-01-01 and 2099-12-31")
+    ])
+}, checks=[
+    pa.Check(validate_effective_dates, error="EFFECTIVE_TO date must not be before EFFECTIVE_FROM date")
+])
 
 communications_schema = pa.DataFrameSchema({
     'UNIQUE_ID': pa.Column(str, checks=[
@@ -84,10 +114,17 @@ communications_schema = pa.DataFrameSchema({
     'CONTACT_TYPE': pa.Column(str, checks=[pa.Check.isin(['EMAIL', 'PHONE'])]),
     'CONTACT_VALUE': pa.Column(str),
     'PRIMARY_FLAG': pa.Column(str, checks=[pa.Check.isin(['Y', 'N'])]),
-    'EFFECTIVE_FROM': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')]),
-    'EFFECTIVE_TO': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')])
+    'EFFECTIVE_FROM': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective from date must be between 1900-01-01 and 2099-12-31")
+    ]),
+    'EFFECTIVE_TO': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective to date must be between 1900-01-01 and 2099-12-31")
+    ])
 }, checks=[
-    pa.Check(validate_contact_value, error="Invalid contact value format for the specified contact type")
+    pa.Check(validate_contact_value, error="Invalid contact value format for the specified contact type"),
+    pa.Check(validate_effective_dates, error="EFFECTIVE_TO date must not be before EFFECTIVE_FROM date")
 ])
 
 assignments_schema = pa.DataFrameSchema({
@@ -101,6 +138,14 @@ assignments_schema = pa.DataFrameSchema({
     'POSITION_ID': pa.Column(str, checks=[pa.Check.str_length(min_value=1, max_value=50)]),
     'DEPARTMENT_ID': pa.Column(str, checks=[pa.Check.str_length(min_value=1, max_value=50)]),
     'LOCATION_ID': pa.Column(str, checks=[pa.Check.str_length(min_value=1, max_value=50)]),
-    'EFFECTIVE_FROM': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')]),
-    'EFFECTIVE_TO': pa.Column(str, checks=[pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$')])
-}) 
+    'EFFECTIVE_FROM': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective from date must be between 1900-01-01 and 2099-12-31")
+    ]),
+    'EFFECTIVE_TO': pa.Column(str, checks=[
+        pa.Check.str_matches(r'^\d{4}-\d{2}-\d{2}$'),
+        pa.Check(lambda x: validate_date_range(x), error="Effective to date must be between 1900-01-01 and 2099-12-31")
+    ])
+}, checks=[
+    pa.Check(validate_effective_dates, error="EFFECTIVE_TO date must not be before EFFECTIVE_FROM date")
+]) 
