@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>HR Core Data Quality Report</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .nav-card {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .nav-card h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .nav-card p {
+            color: #6c757d;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+        .nav-card a {
+            display: inline-block;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+        .nav-card a:hover {
+            background-color: #f8f9fa;
+            text-decoration: none;
+            border-color: #007bff;
+        }
+        .timestamp {
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+        .icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #dc3545;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HR Core Data Quality Report</h1>
+            <p class="subtitle">Comprehensive Data Quality Analysis and Validation</p>
+        </div>
+
+        <div class="nav-grid">
+            <div class="nav-card">
+                <div class="icon">📊</div>
+                <h3>Profile Reports</h3>
+                <p>View detailed statistical profiles and analysis for each HR Core table</p>
+                <a href="profiles/profile_selector.html">View Profile Reports</a>
+            </div>
+
+            <div class="nav-card">
+                <div class="icon">✔️</div>
+                <h3>Validation Report</h3>
+                <p>Check data quality, completeness, and validation results</p>
+                <a href="validation_report_20250317_164046.html">View Validation Report</a>
+            </div>
+
+            <div class="nav-card">
+                <div class="icon">🔄</div>
+                <h3>ER Diagram</h3>
+                <p>Explore the entity relationships between HR Core tables</p>
+                <a href="er_diagram.png" id="er-diagram-link">View ER Diagram</a>
+            </div>
+        </div>
+
+        <p class="timestamp">Last Updated: 2025-03-17 16:40:47</p>
+        <div class="error-message" id="error-message"></div>
+    </div>
+
+    <script>
+        // Function to show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // Check if files exist
+        window.onload = function() {
+            // Check ER diagram
+            const erLink = document.getElementById('er-diagram-link');
+            fetch(erLink.href)
+                .then(response => {
+                    if (!response.ok) {
+                        showError('Some report files are still being generated. Please refresh the page in a few moments.');
+                    }
+                })
+                .catch(() => {
+                    showError('Some report files are still being generated. Please refresh the page in a few moments.');
+                });
+
+            // Check validation report
+            const validationLink = document.querySelector('a[href="validation_report_20250317_164046.html"]');
+            fetch(validationLink.href)
+                .then(response => {
+                    if (!response.ok) {
+                        showError('Some report files are still being generated. Please refresh the page in a few moments.');
+                    }
+                })
+                .catch(() => {
+                    showError('Some report files are still being generated. Please refresh the page in a few moments.');
+                });
+        };
+    </script>
+</body>
+</html> 
