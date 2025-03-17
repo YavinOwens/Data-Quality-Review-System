@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HR Core Data Validation Report</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .success {
+            color: #28a745;
+        }
+        .failure {
+            color: #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .validation-section {
+            margin: 30px 0;
+        }
+        .table-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .column-validation {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 4px solid #ddd;
+        }
+        .column-validation.success {
+            border-left-color: #28a745;
+        }
+        .column-validation.failure {
+            border-left-color: #dc3545;
+        }
+        .profile-link {
+            margin-top: 10px;
+        }
+        .profile-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .profile-link a:hover {
+            text-decoration: underline;
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex: 1;
+            margin: 0 10px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HR Core Data Validation Report</h1>
+        <p>Generated on: 2025-03-17 15:40:37</p>
+
+        <div class="summary-stats">
+            <div class="stat-card">
+                <h3>Total Tables</h3>
+                <div class="stat-number">4</div>
+            </div>
+            <div class="stat-card">
+                <h3>Passed Tables</h3>
+                <div class="stat-number success">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Failed Tables</h3>
+                <div class="stat-number failure">4</div>
+            </div>
+        </div>
+
+        
+        <div class="table-card">
+            <h2>addresses</h2>
+            
+            <!-- Overall Schema Validation -->
+            <div class="validation-section">
+                <h3>Schema Validation</h3>
+                
+                <div class="column-validation failure">
+                    <strong>✗</strong>
+                    Column 'STATE' failed element-wise validator number 0: str_length(2, 2) failure cases: Utah, Alaska, Illinois, Arizona, Washington, Georgia, New Jersey, Arkansas, Maine, Arizona, Vermont, Louisiana, South Carolina, Delaware, Massachusetts, Texas, Massachusetts, Maryland, Pennsylvania, Massachusetts, Ohio, Illinois, Nevada, Arkansas, Arkansas, Wyoming, Nebraska, Delaware, California, Wyoming, North Dakota, Georgia, Wisconsin, Wyoming, Montana, Colorado, Maine, Minnesota, Pennsylvania, Nebraska, Hawaii, Mississippi, Minnesota, Oregon, Massachusetts, Alaska, Maryland, Rhode Island, Rhode Island, New Jersey, Vermont, Illinois, Idaho, Massachusetts, West Virginia, Arizona, Wisconsin, South Carolina, Idaho, California, Kansas, Connecticut, Nebraska, South Carolina, South Dakota, Nevada, Idaho, Virginia, Missouri, Nebraska, Florida, Ohio, Maryland, Ohio, Colorado, Delaware, Utah, New Mexico, Hawaii, Kentucky, Florida, Alaska, Delaware, Louisiana, Massachusetts, Michigan, North Dakota, Hawaii, South Dakota, Massachusetts, Maine, Vermont, Hawaii, Minnesota, Louisiana, West Virginia, New York, Kansas, Hawaii, New Hampshire, North Carolina, New Hampshire, California, South Dakota, Texas, Utah, Alaska, New Hampshire, Ohio, Colorado, Massachusetts, Utah, Connecticut, Arizona, Missouri, Colorado, Idaho, South Carolina, West Virginia, Texas, Tennessee, Wisconsin, West Virginia, North Dakota, Alaska, Maine, South Dakota, Virginia, Virginia, North Dakota, Colorado, New York, North Dakota, Connecticut, California, Oklahoma, Virginia, Idaho, Virginia, Arkansas, Pennsylvania, Delaware, Alabama, New Mexico, California, Idaho, Delaware, Minnesota, Minnesota
+                </div>
+                
+            </div>
+
+            <!-- Column-Level Validations -->
+            <div class="validation-section">
+                <h3>Column Validations</h3>
+                
+                <div class="column-validation failure">
+                    <strong>UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>WORKER_UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>ADDRESS_TYPE:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>ADDRESS_LINE1:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>ADDRESS_LINE2:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>CITY:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>STATE:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>POSTAL_CODE:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>EFFECTIVE_FROM:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>EFFECTIVE_TO:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+            </div>
+
+            <!-- Profile Report Link -->
+            
+        </div>
+        
+        <div class="table-card">
+            <h2>communications</h2>
+            
+            <!-- Overall Schema Validation -->
+            <div class="validation-section">
+                <h3>Schema Validation</h3>
+                
+                <div class="column-validation failure">
+                    <strong>✗</strong>
+                    column 'COMM_TYPE' not in dataframe. Columns in dataframe: ['UNIQUE_ID', 'WORKER_UNIQUE_ID', 'CONTACT_TYPE', 'CONTACT_VALUE', 'PRIMARY_FLAG', 'EFFECTIVE_FROM', 'EFFECTIVE_TO']
+                </div>
+                
+            </div>
+
+            <!-- Column-Level Validations -->
+            <div class="validation-section">
+                <h3>Column Validations</h3>
+                
+                <div class="column-validation failure">
+                    <strong>UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>WORKER_UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>COMM_TYPE:</strong>
+                    ✗
+                    Column COMM_TYPE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>COMM_VALUE:</strong>
+                    ✗
+                    Column COMM_VALUE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>IS_PRIMARY:</strong>
+                    ✗
+                    Column IS_PRIMARY not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>EFFECTIVE_FROM:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>EFFECTIVE_TO:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+            </div>
+
+            <!-- Profile Report Link -->
+            
+        </div>
+        
+        <div class="table-card">
+            <h2>assignments</h2>
+            
+            <!-- Overall Schema Validation -->
+            <div class="validation-section">
+                <h3>Schema Validation</h3>
+                
+                <div class="column-validation failure">
+                    <strong>✗</strong>
+                    column 'ASSIGNMENT_TYPE' not in dataframe. Columns in dataframe: ['UNIQUE_ID', 'WORKER_UNIQUE_ID', 'ASSIGNMENT_NUMBER', 'POSITION_ID', 'DEPARTMENT_ID', 'LOCATION_ID', 'EFFECTIVE_FROM', 'EFFECTIVE_TO']
+                </div>
+                
+            </div>
+
+            <!-- Column-Level Validations -->
+            <div class="validation-section">
+                <h3>Column Validations</h3>
+                
+                <div class="column-validation failure">
+                    <strong>UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>WORKER_UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>ASSIGNMENT_TYPE:</strong>
+                    ✗
+                    Column ASSIGNMENT_TYPE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>START_DATE:</strong>
+                    ✗
+                    Column START_DATE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>END_DATE:</strong>
+                    ✗
+                    Column END_DATE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>DEPARTMENT:</strong>
+                    ✗
+                    Column DEPARTMENT not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>POSITION:</strong>
+                    ✗
+                    Column POSITION not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>LOCATION:</strong>
+                    ✗
+                    Column LOCATION not found in dataframe
+                </div>
+                
+            </div>
+
+            <!-- Profile Report Link -->
+            
+        </div>
+        
+        <div class="table-card">
+            <h2>workers</h2>
+            
+            <!-- Overall Schema Validation -->
+            <div class="validation-section">
+                <h3>Schema Validation</h3>
+                
+                <div class="column-validation failure">
+                    <strong>✗</strong>
+                    column 'EMAIL' not in dataframe. Columns in dataframe: ['UNIQUE_ID', 'PERSON_ID', 'EMPLOYEE_NUMBER', 'FIRST_NAME', 'LAST_NAME', 'BIRTH_DATE', 'SEX', 'MARITAL_STATUS', 'NATIONALITY', 'EFFECTIVE_FROM', 'EFFECTIVE_TO']
+                </div>
+                
+            </div>
+
+            <!-- Column-Level Validations -->
+            <div class="validation-section">
+                <h3>Column Validations</h3>
+                
+                <div class="column-validation failure">
+                    <strong>UNIQUE_ID:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>FIRST_NAME:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>LAST_NAME:</strong>
+                    ✗
+                    column name is set to None. Pass the ``name`` argument when initializing a Column object, or use the ``set_name`` method.
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>EMAIL:</strong>
+                    ✗
+                    Column EMAIL not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>PHONE:</strong>
+                    ✗
+                    Column PHONE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>HIRE_DATE:</strong>
+                    ✗
+                    Column HIRE_DATE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>TERMINATION_DATE:</strong>
+                    ✗
+                    Column TERMINATION_DATE not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>DEPARTMENT:</strong>
+                    ✗
+                    Column DEPARTMENT not found in dataframe
+                </div>
+                
+                <div class="column-validation failure">
+                    <strong>POSITION:</strong>
+                    ✗
+                    Column POSITION not found in dataframe
+                </div>
+                
+            </div>
+
+            <!-- Profile Report Link -->
+            
+        </div>
+        
+        
+        
+        <div class="validation-section">
+            <h2>Entity Relationship Diagram</h2>
+            <img src="er_diagram.png" alt="ER Diagram" style="max-width: 100%; height: auto;">
+        </div>
+        
+    </div>
+    
+    <script>
+        
+        Plotly.newPlot('gauge', gauge_data.data, gauge_data.layout);
+        
+        
+        Plotly.newPlot('bars', bars_data.data, bars_data.layout);
+    </script>
+</body>
+</html> 
