@@ -1,0 +1,19 @@
+/* Reset any default styles that might interfere with our layout */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure the app takes up full height */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* Basic app styles */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+} 

@@ -1,0 +1,342 @@
+
+    <html>
+        <head>
+            <title>HR Core Validation Summary</title>
+            <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    margin: 20px;
+                    background-color: #f8f9fa;
+                }
+                .success { color: #28a745; }
+                .failure { color: #dc3545; }
+                .section { 
+                    margin: 20px 0;
+                    padding: 20px;
+                    background-color: white;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .summary { 
+                    margin: 20px 0;
+                    padding: 20px;
+                    background-color: #e9ecef;
+                    border-radius: 8px;
+                }
+                h1 { 
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                }
+                h2 { 
+                    color: #34495e;
+                    margin-top: 30px;
+                }
+                h3 { 
+                    color: #7f8c8d;
+                }
+                ul { 
+                    list-style-type: none;
+                    padding-left: 20px;
+                }
+                li { 
+                    margin: 10px 0;
+                    padding: 10px;
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                }
+                .validation-card {
+                    background-color: white;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .validation-card h4 {
+                    color: #2c3e50;
+                    margin-bottom: 15px;
+                }
+                .validation-card ul {
+                    padding-left: 0;
+                }
+                .validation-card li {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 10px;
+                    margin: 5px 0;
+                    background-color: #f8f9fa;
+                    border-radius: 4px;
+                }
+                .validation-card .status {
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>HR Core Validation Summary</h1>
+                
+                <div class="summary">
+                    <h2>Overall Statistics</h2>
+                    <div id="gauge"></div>
+                    <div id="bars"></div>
+                    <p>Total checks: 42</p>
+                    <p>Passed checks: 35</p>
+                    <p>Success rate: 83.3%</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Table Validations</h2>
+    
+                <div class="validation-card">
+                    <h4>workers</h4>
+                    <ul>
+            
+                    <li>
+                        <span class="status success">✅ workers_unique_id_not_null</span>
+                        <span>Found 0 null values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_unique_id_unique</span>
+                        <span>Found 0 duplicate values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_unique_id_format</span>
+                        <span>UNIQUE_ID format should be UUID v4</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_person_id_not_null</span>
+                        <span>Found 0 null values in PERSON_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_person_id_unique</span>
+                        <span>Found 0 duplicate values in PERSON_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_employee_number_not_null</span>
+                        <span>Found 0 null values in EMPLOYEE_NUMBER</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ workers_employee_number_format</span>
+                        <span>Invalid employee number format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_first_name_not_null</span>
+                        <span>Found 0 null values in FIRST_NAME</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_last_name_not_null</span>
+                        <span>Found 0 null values in LAST_NAME</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ workers_sex_valid</span>
+                        <span>Invalid sex values found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_birth_date_valid</span>
+                        <span>Invalid birth date format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_birth_date_range</span>
+                        <span>Birth date out of valid range</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_national_id_format</span>
+                        <span>Invalid national identifier format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_current_employee_flag_valid</span>
+                        <span>Invalid current employee flag values found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ workers_effective_dates_valid</span>
+                        <span>Invalid effective date range found</span>
+                    </li>
+                
+                    </ul>
+                </div>
+            
+                <div class="validation-card">
+                    <h4>addresses</h4>
+                    <ul>
+            
+                    <li>
+                        <span class="status success">✅ addresses_unique_id_not_null</span>
+                        <span>Found 0 null values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_unique_id_unique</span>
+                        <span>Found 0 duplicate values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_unique_id_format</span>
+                        <span>UNIQUE_ID format should be UUID v4</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_worker_id_not_null</span>
+                        <span>Found 0 null values in WORKER_UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_address_id_not_null</span>
+                        <span>Found 0 null values in ADDRESS_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_address_id_unique</span>
+                        <span>Found 0 duplicate values in ADDRESS_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_street_not_null</span>
+                        <span>Found 0 null values in ADDRESS_LINE1</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_city_not_null</span>
+                        <span>Found 0 null values in CITY</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ addresses_postal_code_format</span>
+                        <span>Invalid postal code format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_country_valid</span>
+                        <span>Invalid country values found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ addresses_type_valid</span>
+                        <span>Invalid address types found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ addresses_effective_dates_valid</span>
+                        <span>Invalid effective date range found</span>
+                    </li>
+                
+                    </ul>
+                </div>
+            
+                <div class="validation-card">
+                    <h4>communications</h4>
+                    <ul>
+            
+                    <li>
+                        <span class="status success">✅ communications_unique_id_not_null</span>
+                        <span>Found 0 null values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_unique_id_unique</span>
+                        <span>Found 0 duplicate values in UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_unique_id_format</span>
+                        <span>UNIQUE_ID format should be UUID v4</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_worker_id_not_null</span>
+                        <span>Found 0 null values in WORKER_UNIQUE_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_contact_id_not_null</span>
+                        <span>Found 0 null values in CONTACT_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_contact_id_unique</span>
+                        <span>Found 0 duplicate values in CONTACT_ID</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ communications_type_valid</span>
+                        <span>Invalid contact types found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_value_not_null</span>
+                        <span>Found 0 null values in CONTACT_VALUE</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ communications_email_format</span>
+                        <span>Invalid email format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status failure">❌ communications_phone_format</span>
+                        <span>Invalid phone number format found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_primary_flag_valid</span>
+                        <span>Invalid primary flag values found</span>
+                    </li>
+                
+                    <li>
+                        <span class="status success">✅ communications_effective_dates_valid</span>
+                        <span>Invalid effective date range found</span>
+                    </li>
+                
+                    </ul>
+                </div>
+            
+                </div>
+                
+                <div class="section">
+                    <h2>Relationship Validations</h2>
+                    <ul>
+        
+                <li>
+                    <span class="status success">✅ assignments_worker_unique_id_reference</span>
+                    <span>All assignments have valid WORKER_UNIQUE_ID</span>
+                </li>
+            
+                <li>
+                    <span class="status success">✅ addresses_worker_unique_id_reference</span>
+                    <span>All addresses have valid WORKER_UNIQUE_ID</span>
+                </li>
+            
+                <li>
+                    <span class="status success">✅ communications_worker_unique_id_reference</span>
+                    <span>All communications have valid WORKER_UNIQUE_ID</span>
+                </li>
+            
+                    </ul>
+                </div>
+            </div>
+            
+            <script>
+                var gaugeData = {"data":[{"domain":{"x":[0,1],"y":[0,1]},"gauge":{"axis":{"range":[0,100]},"bar":{"color":"darkblue"},"steps":[{"color":"red","range":[0,60]},{"color":"yellow","range":[60,80]},{"color":"green","range":[80,100]}],"threshold":{"line":{"color":"black","width":4},"thickness":0.75,"value":83.33333333333334}},"mode":"gauge+number","title":{"text":"Overall Success Rate"},"value":83.33333333333334,"type":"indicator"}],"layout":{"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}}};
+                var barsData = {"data":[{"marker":{"color":"green"},"name":"Passed","x":["workers","addresses","communications"],"y":[13,10,9],"type":"bar"},{"marker":{"color":"red"},"name":"Failed","x":["workers","addresses","communications"],"y":[2,2,3],"type":"bar"}],"layout":{"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"title":{"text":"Validation Results by Table"},"barmode":"stack"}};
+                Plotly.newPlot('gauge', gaugeData.data, gaugeData.layout);
+                Plotly.newPlot('bars', barsData.data, barsData.layout);
+            </script>
+        </body>
+    </html>
+    
