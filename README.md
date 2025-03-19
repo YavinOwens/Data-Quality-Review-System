@@ -5,6 +5,8 @@ This repository contains two main components:
 1. **PL/SQL Validation Scripts** - A suite of PL/SQL scripts for validating and standardizing Oracle HR table data
 2. **HR Table Schema Scraper** - A Python tool for scraping Oracle HR table definitions and generating CSV documentation
 
+![Homepage Screenshot](resource/homepage.png)
+
 ## PL/SQL Validation Scripts
 
 ### Oracle HR Table Validation Scripts
@@ -74,12 +76,29 @@ A Python-based tool for scraping Oracle HR table definitions from web pages and 
    - Diagrams are mapped to tables based on naming patterns and explicit mappings
    - You can also view all available ERD diagrams in the dedicated section on the home page
 
-### Files
+### Files and Directory Structure
 
-- **oracle_table_scraper.py** - Main scraper script
+```text
+├── oracle_tables/              # Data directory for scraped tables
+│   ├── tables/                # CSV files for each table
+│   ├── text information/      # Metadata text files
+│   └── erds/                  # ERD diagram files
+├── templates/                 # Web viewer templates
+├── resource/                  # Screenshots and resources
+├── setup/                     # Setup and utility files
+│   ├── config/                # Configuration files
+│   ├── scraper/               # Scraper source files
+│   └── data/                  # Data source files
+├── web_viewer.py              # Main web application
+└── README.md                  # This file
+```
+
+#### Key Files:
+
 - **web_viewer.py** - Flask web application for viewing scraped schemas and ERD diagrams
-- **oracle_hr_urls.csv** - CSV file containing the URLs to scrape
-- **oracle_hr_erd.csv** - CSV file containing the URLs for ERD diagrams
+- **setup/scraper/oracle_table_scraper.py** - Main scraper script
+- **setup/data/oracle_hr_urls.csv** - CSV file containing the URLs to scrape
+- **setup/data/oracle_hr_erd.csv** - CSV file containing the URLs for ERD diagrams
 
 ## Usage Examples
 
@@ -99,6 +118,40 @@ To run specific validations, use the relevant script and call the procedures:
 EXEC create_address_clean_copy;
 EXEC standardize_uk_counties;
 EXEC validate_uk_postcodes;
+```
+
+## Application Screenshots
+
+### Homepage
+
+![Homepage](resource/homepage.png)
+
+### Table Schemas Page
+
+![Schemas Page](resource/schemas.png)
+
+### Table Detail View
+
+![Table Detail](resource/table_detail.png)
+
+### ERD Diagrams Page
+
+![ERD Diagrams](resource/erds.png)
+
+### Text Information View
+
+![Text Information](resource/text_info.png)
+
+## Features
+
+- **Table Schema Viewer** - Browse all available tables with descriptions
+- **ERD Diagram Viewer** - View entity relationship diagrams for Oracle HR tables
+- **Text Information Viewer** - View metadata information for each table
+- **Search Functionality** - Search across schemas and ERD diagrams
+- **Consistent Navigation** - In-app chatbot for assistance available on all pages
+- **Mobile-Friendly UI** - Responsive design that works on all device sizes
+
+```sql
 EXEC clean_address_spaces;
 EXEC identify_incomplete_addresses;
 ```
