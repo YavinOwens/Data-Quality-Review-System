@@ -36,6 +36,8 @@ TEXT_INFO_DIR = os.path.join(BASE_DATA_DIR, 'text information')
 
 # File storing ERD diagram URLs
 ERD_FILE = 'oracle_hr_erd.csv'
+# File storing table URLs and descriptions
+URL_FILE = 'oracle_hr_urls.csv'
 
 # Directory where ERD diagrams are stored
 ERD_DIR = 'erds'
@@ -46,12 +48,26 @@ def get_available_tables() -> List[Dict]:
     """
     Get a list of available tables from the data directory.
     Shows only distinct tables based on analyzing table structure files.
+    Also loads source URLs from oracle_hr_urls.csv if available.
     
     Returns:
         List[Dict]: List of table information dictionaries
     """
     tables = []
     table_mapping = {}
+    
+    # Load table URLs and descriptions from oracle_hr_urls.csv if it exists
+    url_data = {}
+    if os.path.exists(URL_FILE):
+        try:
+            url_df = pd.read_csv(URL_FILE)
+            for _, row in url_df.iterrows():
+                url_data[row['table_name']] = {
+                    'url': row['url'],
+                    'description': row['description']
+                }
+        except Exception as e:
+            print(f"Error reading URL file: {e}")
     
     # Check if directories exist
     if not os.path.exists(TABLES_DIR):
@@ -155,11 +171,21 @@ def get_available_tables() -> List[Dict]:
         # Extract timestamp portion
         timestamp = filename.replace(table_name + '_', '').replace('.csv', '')
         
+        # Check if we have URL info for this table
+        url = None
+        if table_name in url_data:
+            # Use URL from url_data
+            url = url_data[table_name]['url']
+            # Use description from url_data if we don't have one already
+            if not description:
+                description = url_data[table_name]['description']
+        
         tables.append({
             'name': table_name,
             'file_path': file_path,
             'timestamp': timestamp,
             'description': description,
+            'url': url,
             'mod_time': info['mod_time']
         })
     

@@ -93,7 +93,7 @@ A Python-based tool for scraping Oracle HR table definitions from web pages and 
 └── README.md                  # This file
 ```
 
-#### Key Files:
+#### Key Files
 
 - **web_viewer.py** - Flask web application for viewing scraped schemas and ERD diagrams
 - **setup/scraper/oracle_table_scraper.py** - Main scraper script

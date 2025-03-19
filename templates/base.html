@@ -91,6 +91,40 @@
     <!-- Include chatbot widget -->
     {% include 'partials/chatbot.html' %}
     
+    <!-- Smooth navigation script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth navigation between pages
+            const navLinks = document.querySelectorAll('a:not([target="_blank"])');
+            navLinks.forEach(link => {
+                // Skip external links and download links
+                if (link.getAttribute('href') && 
+                    link.getAttribute('href').startsWith('/') && 
+                    !link.getAttribute('href').includes('.pdf') && 
+                    !link.getAttribute('download')) {
+                    
+                    link.addEventListener('click', function(e) {
+                        // Remember chatbot state
+                        const chatPanel = document.getElementById('chatbot-panel');
+                        const isChatActive = chatPanel && chatPanel.classList.contains('active');
+                        localStorage.setItem('chatbotActive', isChatActive ? 'true' : 'false');
+                    });
+                }
+            });
+            
+            // Restore chatbot state
+            const chatbotState = localStorage.getItem('chatbotActive');
+            if (chatbotState === 'true') {
+                setTimeout(function() {
+                    const chatPanel = document.getElementById('chatbot-panel');
+                    if (chatPanel) chatPanel.classList.add('active');
+                }, 500);
+            }
+        });
+    </script>
+    
+    {% block scripts %}{% endblock %}
+    
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!-- Chatbot Widget - Placeholder for future AI integration -->
-<div class="chatbot-container">
+<div class="chatbot-container" id="chatbot-container" style="opacity: 0; visibility: hidden;">
     <div id="chatbot-panel" class="chatbot-panel">
         <div class="chatbot-header">
             <h5><i class="fas fa-robot"></i> Database Assistant</h5>
@@ -20,7 +20,14 @@
             </button>
         </div>
     </div>
-    <button id="chatbot-toggle" class="chatbot-toggle">
+    <button id="chatbot-toggle" class="chatbot-toggle" style="display: none;">
+        <i class="fas fa-comments"></i>
+    </button>
+</div>
+
+<!-- Fallback button in case the main one disappears -->
+<div id="chatbot-fallback" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none;">
+    <button onclick="reviveChatbot()" class="btn btn-primary rounded-circle" style="width: 60px; height: 60px;">
         <i class="fas fa-comments"></i>
     </button>
 </div>
@@ -32,7 +39,7 @@
         right: 20px;
         z-index: 9999;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        display: block !important;
+        transition: opacity 0.3s ease;
         pointer-events: auto !important;
     }
     
@@ -172,17 +179,62 @@
 </style>
 
 <script>
+    // Global variable to track initialization state
+    let chatbotInitialized = false;
+    
+    // Revive chatbot if it disappears
+    function reviveChatbot() {
+        const container = document.getElementById('chatbot-container');
+        const fallback = document.getElementById('chatbot-fallback');
+        
+        if (container) {
+            container.style.opacity = '1';
+            container.style.visibility = 'visible';
+            
+            const toggleButton = document.getElementById('chatbot-toggle');
+            if (toggleButton) toggleButton.style.display = 'flex';
+            
+            if (fallback) fallback.style.display = 'none';
+            
+            // Reinitialize if needed
+            if (!chatbotInitialized) {
+                initChatbot();
+            }
+        }
+    }
+    
     // Run code immediately and after DOM is loaded
     function initChatbot() {
+        const container = document.getElementById('chatbot-container');
         const toggleButton = document.getElementById('chatbot-toggle');
         const chatPanel = document.getElementById('chatbot-panel');
         const minimizeButton = document.getElementById('minimize-chat');
         const sendButton = document.getElementById('send-message');
         const userInput = document.getElementById('user-input');
         const messagesContainer = document.getElementById('chatbot-messages');
+        const fallback = document.getElementById('chatbot-fallback');
+        
+        // If elements don't exist, we can't initialize
+        if (!toggleButton || !chatPanel || !container) {
+            console.log('Chatbot elements not found, will retry');
+            
+            // Show fallback button
+            if (fallback) fallback.style.display = 'block';
+            return;
+        }
+        
+        // Mark as initialized
+        chatbotInitialized = true;
+        
+        // Make container visible
+        container.style.opacity = '1';
+        container.style.visibility = 'visible';
         
         // Make sure toggle button is visible
-        if (toggleButton) toggleButton.style.display = 'flex';
+        toggleButton.style.display = 'flex';
+        
+        // Hide fallback button
+        if (fallback) fallback.style.display = 'none';
         
         // Toggle chat panel
         toggleButton.addEventListener('click', function() {
@@ -268,11 +320,71 @@
     
     // Initialize on DOM load
     document.addEventListener('DOMContentLoaded', function() {
-        initChatbot();
+        setTimeout(initChatbot, 100);
     });
     
     // Also try to initialize immediately
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        setTimeout(initChatbot, 1);
+        setTimeout(initChatbot, 100);
+    }
+    
+    // Initialize on page transitions via History API
+    window.addEventListener('popstate', function() {
+        setTimeout(initChatbot, 100);
+    });
+    
+    // For all link clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.tagName === 'A' || e.target.closest('a')) {
+            // Store chatbot state before navigation
+            localStorage.setItem('chatbotWasInitialized', chatbotInitialized.toString());
+            localStorage.setItem('chatbotWasActive', document.getElementById('chatbot-panel')?.classList.contains('active') ? 'true' : 'false');
+        }
+    });
+    
+    // Check more frequently at the beginning when the page loads
+    let checkCount = 0;
+    const intervalCheck = setInterval(function() {
+        checkCount++;
+        const container = document.getElementById('chatbot-container');
+        const toggleButton = document.getElementById('chatbot-toggle');
+        const fallback = document.getElementById('chatbot-fallback');
+        
+        if (!chatbotInitialized || (toggleButton && toggleButton.style.display !== 'flex') || 
+            (container && (container.style.opacity === '0' || container.style.visibility === 'hidden'))) {
+            console.log('Chatbot needs to be revived');
+            reviveChatbot();
+        }
+        
+        // Show fallback button if container is not visible
+        if (container && (container.style.opacity === '0' || container.style.visibility === 'hidden')) {
+            if (fallback) fallback.style.display = 'block';
+        }
+        
+        // After 10 checks, switch to less frequent checks
+        if (checkCount > 10) {
+            clearInterval(intervalCheck);
+            setInterval(function() {
+                if (!chatbotInitialized || (toggleButton && toggleButton.style.display !== 'flex') || 
+                    (container && (container.style.opacity === '0' || container.style.visibility === 'hidden'))) {
+                    reviveChatbot();
+                }
+            }, 2000);
+        }
+    }, 500);
+    
+    // Restore chatbot state after navigation
+    if (localStorage.getItem('chatbotWasInitialized') === 'true') {
+        setTimeout(function() {
+            reviveChatbot();
+            
+            // If it was active, reactivate it
+            if (localStorage.getItem('chatbotWasActive') === 'true') {
+                setTimeout(function() {
+                    const chatPanel = document.getElementById('chatbot-panel');
+                    if (chatPanel) chatPanel.classList.add('active');
+                }, 500);
+            }
+        }, 200);
     }
 </script>
