@@ -1,34 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database HR Table Schemas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .schema-container {
-            margin-top: 20px;
-        }
-        .table-schema {
-            margin-bottom: 30px;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .schema-header {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .schema-body {
-            padding: 15px;
-        }
-        .column-name {
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Database HR Table Schemas{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .schema-container {
+        margin-top: 20px;
+    }
+    .table-schema {
+        margin-bottom: 30px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .schema-header {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .schema-body {
+        padding: 15px;
+    }
+    .column-name {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
             <h1>All Table Schemas</h1>
@@ -54,7 +53,12 @@
                             <h3>{{ table.name }}</h3>
                             <p class="text-muted mb-0">{{ table.description }}</p>
                         </div>
-                        <a href="/table/{{ table.name }}" class="btn btn-primary">View Details</a>
+                        <div class="d-flex gap-2">
+                            {% if table.url %}
+                            <a href="{{ table.url }}" target="_blank" class="btn btn-outline-info">View Source</a>
+                            {% endif %}
+                            <a href="/table/{{ table.name }}" class="btn btn-primary">View Details</a>
+                        </div>
                     </div>
                     <div class="schema-body">
                         {% if table.columns %}
@@ -88,22 +92,23 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Simple filter functionality
-        document.getElementById('filterInput').addEventListener('keyup', function() {
-            const filterValue = this.value.toLowerCase();
-            const tableItems = document.querySelectorAll('.table-item');
-            
-            tableItems.forEach(item => {
-                const tableName = item.getAttribute('data-table-name').toLowerCase();
-                if (tableName.includes(filterValue)) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Simple filter functionality
+    document.getElementById('filterInput').addEventListener('keyup', function() {
+        const filterValue = this.value.toLowerCase();
+        const tableItems = document.querySelectorAll('.table-item');
+        
+        tableItems.forEach(item => {
+            const tableName = item.getAttribute('data-table-name').toLowerCase();
+            if (tableName.includes(filterValue)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
+            }
         });
-    </script>
-</body>
-</html>
+    });
+</script>
+{% endblock %}
