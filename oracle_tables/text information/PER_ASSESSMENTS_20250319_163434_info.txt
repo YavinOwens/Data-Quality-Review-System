@@ -1,0 +1,26 @@
+Information for PER_ASSESSMENTS_20250319_163434:
+==================================================
+
+property: table_name
+value: PER_ASSESSMENTS
+
+property: owner
+value: HR
+
+property: table_name
+value: PER_ASSESSMENTS
+
+property: description
+value: The grouping of a set of assessment elements each of which represents
+a persons opinion of either their own or another persons proficiency
+level or performance rating for a competence over a given period of
+time.
+The assessment may hold the overall assessment score which is a sum of
+the scores on each of the constituent assessment elements.
+
+property: primary_key
+value: ASSESSMENT_ID
+
+property: scrape_date
+value: 2025-03-19 16:34:34
+

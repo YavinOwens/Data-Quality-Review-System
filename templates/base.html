@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Database HR Viewer{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .erd-card {
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .erd-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pdf-icon {
+            font-size: 5rem;
+            color: #dc3545;
+        }
+        /* Navigation styles */
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        /* Custom component styles */
+        .table-preview {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .description-box {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        /* Table styling */
+        .table-striped>tbody>tr:nth-child(odd)>td {
+            background-color: rgba(0,0,0,.05);
+        }
+        /* Additional custom styles */
+    </style>
+    {% block extra_styles %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Database HR Schema Viewer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/schemas">Table Schemas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/erds">ERD Diagrams</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/text-info">Text Information</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <footer class="bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p class="text-muted">Database HR Schema Viewer - 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    
+    <!-- Include chatbot widget -->
+    {% include 'partials/chatbot.html' %}
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

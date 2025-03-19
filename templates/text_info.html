@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Tables - Text Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .preview-text {
+            max-height: 150px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Database Tables Viewer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Tables</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/text-info">Text Information</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="mb-4">Distinct Text Information Files</h1>
+
+        <a href="/" class="btn btn-primary mb-4">Back to Tables</a>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Total Distinct Text Files: {{ text_info_files|length }}</h5>
+                <p class="card-text">This page shows all distinct text information files from the "text information" directory.</p>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for file in text_info_files %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">{{ file.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Preview:</h6>
+                        <div class="preview-text">{{ file.preview }}</div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="/table/{{ file.name }}" class="btn btn-primary">View Table</a>
+                        <a href="/text-info/{{ file.name }}" class="btn btn-success">View Full Content</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

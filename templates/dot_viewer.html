@@ -1,0 +1,697 @@
+{% extends "base.html" %}
+
+{% block title %}{{ diagram.name }} - Database HR ERD Viewer{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    .diagram-heading {
+        color: #2c3e50;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .diagram-description {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    
+    .control-panel {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .diagram-container {
+        background-color: #ffffff;
+        border-radius: 5px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        overflow: auto;
+        position: relative;
+    }
+    
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255,255,255,0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    .btn-custom {
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+    
+    .help-text {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-top: 10px;
+    }
+    
+    .search-highlight {
+        fill: yellow !important;
+        stroke: orange !important;
+        stroke-width: 2px !important;
+    }
+    
+    /* Legend styles */
+    .erd-legend {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 15px;
+    }
+    
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+        border: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">{{ diagram.name }}</h3>
+                        <div>
+                            <a href="/erds" class="btn btn-sm btn-light"><i class="fas fa-arrow-left"></i> Back to ERDs</a>
+                            <a href="/" class="btn btn-sm btn-light ml-2"><i class="fas fa-home"></i> Home</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <p class="diagram-description">{{ diagram.description }}</p>
+                    
+                    {% if bespoke_diagram %}
+                    <div class="alert alert-info mb-3">
+                        <h5><i class="fas fa-info-circle"></i> Full Visualization Mode ({{ file_size_mb }} MB)</h5>
+                        <p>This is the full professional visualization of the ERD diagram with no size constraints. You can zoom in and out to see all details.</p>
+                        <p>For high-quality presentations and print output, use the <strong>Export as PDF</strong> option to create zoomable professional PDFs.</p>
+                        {% if show_full_option %}
+                        <p>If you prefer a faster, lightweight view, use the <a href="?simple=false" class="alert-link"><i class="fas fa-bolt"></i> Simplified View</a>.</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="control-panel">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="btn-group" role="group" aria-label="Zoom Controls">
+                                    <button id="zoom-in" class="btn btn-outline-primary btn-custom" title="Zoom In">
+                                        <i class="fas fa-search-plus"></i> Zoom In
+                                    </button>
+                                    <button id="zoom-out" class="btn btn-outline-primary btn-custom" title="Zoom Out">
+                                        <i class="fas fa-search-minus"></i> Zoom Out
+                                    </button>
+                                    <button id="reset-zoom" class="btn btn-outline-secondary btn-custom" title="Reset Zoom">
+                                        <i class="fas fa-sync-alt"></i> Reset
+                                    </button>
+                                </div>
+                                <div class="btn-group ml-2" role="group" aria-label="Download Options">
+                                    <button id="download-svg" class="btn btn-outline-success btn-custom" title="Download as SVG">
+                                        <i class="fas fa-download"></i> Download SVG
+                                    </button>
+                                    {% if dot_path %}
+                                    <a href="{{ dot_path }}" class="btn btn-outline-secondary btn-custom" download>
+                                        <i class="fas fa-file-code"></i> DOT File
+                                    </a>
+                                    
+                                    <div class="dropdown d-inline-block">
+                                        <button class="btn btn-success btn-custom dropdown-toggle" type="button" id="exportPdfDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-file-pdf"></i> Export as PDF
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="exportPdfDropdown">
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A4">A4 Size</a>
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A3">A3 Size</a>
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A2">A2 Size (Recommended)</a>
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A1">A1 Size</a>
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A0">A0 Size (Largest)</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A2&dpi=600">High-Resolution (600 DPI)</a>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="btn-group ml-2">
+                                        <a href="/erd/{{ diagram.slug }}?mode=simplified" class="btn btn-outline-primary btn-custom">
+                                            <i class="fas fa-sitemap"></i> Simplified View
+                                        </a>
+                                        <a href="/erd/{{ diagram.slug }}?mode=pdf" class="btn btn-outline-info btn-custom">
+                                            <i class="fas fa-file-pdf"></i> PDF View
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" id="entity-search" class="form-control" placeholder="Search for tables or columns...">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" id="search-button">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                        <button class="btn btn-secondary" id="clear-search">
+                                            <i class="fas fa-times"></i> Clear
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="help-text">Type a table or column name to highlight it in the diagram</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="diagram-container" style="height: calc(100vh - 350px);">
+                        <div id="loading" class="loading-overlay">
+                            <div class="spinner-border text-primary mb-3" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <p>Rendering ERD diagram... This may take a moment.</p>
+                        </div>
+                        
+                        <div id="graph-container" style="width: 100%; height: 100%; display: none;">
+                            <div id="graph" style="transform-origin: 0 0;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="erd-legend mt-3">
+                        <h5>Legend</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #FFE6E6;"></div>
+                                    <span>Primary Key (PK)</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #E6F0FF;"></div>
+                                    <span>Foreign Key (FK)</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #F0E6FF;"></div>
+                                    <span>Primary & Foreign Key (PK/FK)</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="legend-item">
+                                    <div class="d-flex align-items-center">
+                                        <span style="margin-right: 10px;">Crow's Foot:</span>
+                                        <span><b>1</b> — <b>n</b></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Load Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Load viz.js for diagram rendering -->
+<script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/viz.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Configuration
+    const dotPath = "{{ dot_path }}";
+    let currentScale = 1.0;
+    let highlighted = [];
+    let dotSource = '';
+    let pannableGraph = false;
+    let panLastX = 0;
+    let panLastY = 0;
+    
+    // DOM elements
+    const container = document.getElementById('graph');
+    const graphContainer = document.getElementById('graph-container');
+    const loading = document.getElementById('loading');
+    const searchInput = document.getElementById('entity-search');
+    const searchButton = document.getElementById('search-button');
+    const clearSearchButton = document.getElementById('clear-search');
+    
+    // Create Viz instance with optimized options
+    const viz = new Viz({
+      workerURL: 'https://cdn.jsdelivr.net/npm/viz.js@2.1.2/full.render.js', 
+      engine: 'dot',
+      // increase worker timeout for large diagrams
+      workerTimeout: 120000  // 2 minutes timeout for worker
+    });
+    
+    // Optimize rendering for large diagrams
+    function optimizeRendering(dot) {
+      // For very large DOT files, we need more aggressive optimizations
+      if (dot.length > 100000) {
+        document.getElementById('loading-status').textContent = 
+          "Large diagram detected - optimizing for faster rendering";
+        
+        // Basic whitespace optimization
+        dot = dot.replace(/\s+/g, ' ');
+        
+        // Check if this is a bespoke large diagram (look for the flag we added server-side)
+        if (dot.includes('bespoke_large_diagram=true')) {
+          document.getElementById('loading-status').textContent = 
+            "Very large bespoke diagram detected - applying advanced optimizations";
+          
+          // Add a notification about large diagram rendering
+          const noticeBox = document.createElement('div');
+          noticeBox.className = 'alert alert-info mt-3';
+          noticeBox.id = 'bespoke-notice';
+          noticeBox.innerHTML = `
+            <h5><i class="fas fa-info-circle"></i> Large Bespoke ERD</h5>
+            <p>This is a very large bespoke ERD diagram that may take longer to render. 
+               Some visual simplifications have been applied to improve performance.</p>
+            <p><small>Running on M2 Mac Mini - Local rendering</small></p>
+          `;
+          document.getElementById('loading').after(noticeBox);
+        }
+      }
+      return dot;
+    }
+    
+    // Fetch and render the DOT file
+    fetch(dotPath)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(dot => {
+        dotSource = dot;
+        // Display detailed processing message with progress indicators
+        loading.innerHTML = `
+          <div class="spinner-border text-primary mb-3" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <p id="loading-status">Processing ERD diagram... Parsing DOT syntax</p>
+          <div class="progress mt-2 mb-2">
+            <div id="loading-progress" class="progress-bar progress-bar-striped progress-bar-animated" 
+                 role="progressbar" style="width: 10%" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p class="small text-muted">Large ERD diagrams may take 30-60 seconds to render</p>
+        `;
+        
+        // Update loading status periodically to give feedback
+        let loadingStep = 0;
+        const loadingSteps = [
+          'Parsing DOT syntax', 
+          'Building diagram structure', 
+          'Rendering relationships', 
+          'Creating SVG elements',
+          'Finalizing diagram'
+        ];
+        const loadingInterval = setInterval(() => {
+          loadingStep = (loadingStep + 1) % loadingSteps.length;
+          document.getElementById('loading-status').textContent = 
+            `Processing ERD diagram... ${loadingSteps[loadingStep]}`;
+          
+          // Update progress bar
+          const progress = Math.min(10 + loadingStep * 15, 90);
+          const progressBar = document.getElementById('loading-progress');
+          progressBar.style.width = `${progress}%`;
+          progressBar.setAttribute('aria-valuenow', progress);
+        }, 2000);
+        // Update the loading status
+        document.getElementById('loading-status').textContent = 
+          "Converting diagram to SVG (this may take a while for complex diagrams)";
+        
+        // Optimize the DOT for rendering
+        const optimizedDot = optimizeRendering(dot);
+        
+        return viz.renderSVGElement(optimizedDot);
+      })
+      .then(svg => {
+        // Clear interval and complete progress bar
+        clearInterval(loadingInterval);
+        const progressBar = document.getElementById('loading-progress');
+        progressBar.style.width = '100%';
+        progressBar.setAttribute('aria-valuenow', 100);
+        
+        // Hide loading indicator after a brief pause to show completion
+        setTimeout(() => {
+          loading.style.display = 'none';
+        }, 500);
+        
+        // Configure SVG for better display
+        svg.style.maxWidth = '100%';
+        svg.style.height = 'auto';
+        
+        // Add title for accessibility
+        const titleElement = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        titleElement.textContent = '{{ diagram.name }} - Entity Relationship Diagram';
+        svg.insertBefore(titleElement, svg.firstChild);
+        
+        // Show the graph container
+        graphContainer.style.display = 'block';
+        
+        // Append the SVG to the container
+        container.appendChild(svg);
+        
+        // Make the diagram interactive
+        setupInteractivity(svg);
+        
+        // Reset the zoom
+        resetZoom();
+      })
+      .catch(error => {
+        // Display error with more details
+        loading.innerHTML = `
+          <div class="alert alert-danger">
+            <h4 class="alert-heading">Error rendering diagram</h4>
+            <p>${error.message}</p>
+            <hr>
+            <p class="mb-0">Please check that the .dot file is valid or try again later.</p>
+          </div>
+        `;
+        console.error('Error rendering diagram:', error);
+      });
+    
+    // Setup interactive features for the diagram
+    function setupInteractivity(svg) {
+      const isBespokeERD = dotSource.includes('bespoke_large_diagram=true');
+      const tableNodes = svg.querySelectorAll('.node');
+      const nodeCount = tableNodes.length;
+      
+      // For very large bespoke ERDs, use a more efficient approach
+      if (isBespokeERD && nodeCount > 30) {
+        console.log(`Applying light interactivity mode for large bespoke ERD with ${nodeCount} nodes`);
+        
+        // Show a notification that we're using limited interactivity
+        const noticeBox = document.getElementById('bespoke-notice');
+        if (noticeBox) {
+          noticeBox.innerHTML += `
+            <p class="mt-2"><i class="fas fa-bolt"></i> Using optimized interactivity for ${nodeCount} tables</p>
+          `;
+        }
+        
+        // Apply delegated event handling instead of individual listeners
+        // This is much more efficient for large numbers of nodes
+        svg.addEventListener('mouseover', (e) => {
+          const node = e.target.closest('.node');
+          if (node) {
+            const rect = node.querySelector('polygon, rect, ellipse');
+            if (rect) {
+              rect.setAttribute('fill', '#f0f8ff');
+              rect.setAttribute('stroke', '#4682b4');
+              rect.setAttribute('stroke-width', '2');
+            }
+          }
+        });
+        
+        svg.addEventListener('mouseout', (e) => {
+          const node = e.target.closest('.node');
+          if (node) {
+            const rect = node.querySelector('polygon, rect, ellipse');
+            if (rect) {
+              rect.setAttribute('fill', '#ffffff');
+              rect.setAttribute('stroke', '#000000');
+              rect.setAttribute('stroke-width', '1');
+            }
+          }
+        });
+      } else {
+        // Standard interactivity for smaller diagrams
+        tableNodes.forEach(node => {
+          // Add hover effects
+          node.addEventListener('mouseenter', () => {
+            // Store original styling
+            const rect = node.querySelector('polygon, rect, ellipse');
+            if (rect) {
+              rect.setAttribute('data-original-fill', rect.getAttribute('fill') || '#ffffff');
+              rect.setAttribute('data-original-stroke', rect.getAttribute('stroke') || '#000000');
+              rect.setAttribute('data-original-stroke-width', rect.getAttribute('stroke-width') || '1');
+              
+              // Apply highlight styling
+              rect.setAttribute('fill', '#f0f8ff');
+              rect.setAttribute('stroke', '#4682b4');
+              rect.setAttribute('stroke-width', '2');
+            }
+            
+            // Highlight related edges/relationships
+            highlightRelatedEdges(node, true);
+          });
+          
+          node.addEventListener('mouseleave', () => {
+            // Restore original styling
+            const rect = node.querySelector('polygon, rect, ellipse');
+            if (rect) {
+              rect.setAttribute('fill', rect.getAttribute('data-original-fill'));
+              rect.setAttribute('stroke', rect.getAttribute('data-original-stroke'));
+              rect.setAttribute('stroke-width', rect.getAttribute('data-original-stroke-width'));
+            }
+            
+            // Remove highlight from related edges
+            highlightRelatedEdges(node, false);
+          });
+        });
+      }
+      
+      // Make SVG pannable with mouse drag
+      setupPanAndZoom(svg);
+    }
+    
+    // Highlight edges connected to a node
+    function highlightRelatedEdges(node, highlight) {
+      const nodeId = node.id;
+      if (!nodeId) return;
+      
+      const edges = document.querySelectorAll('.edge');
+      edges.forEach(edge => {
+        const title = edge.querySelector('title');
+        if (title && title.textContent.includes(nodeId)) {
+          const path = edge.querySelector('path');
+          if (path) {
+            if (highlight) {
+              path.setAttribute('data-original-stroke', path.getAttribute('stroke') || '#000000');
+              path.setAttribute('data-original-stroke-width', path.getAttribute('stroke-width') || '1');
+              
+              path.setAttribute('stroke', '#4682b4');
+              path.setAttribute('stroke-width', '2');
+            } else {
+              path.setAttribute('stroke', path.getAttribute('data-original-stroke'));
+              path.setAttribute('stroke-width', path.getAttribute('data-original-stroke-width'));
+            }
+          }
+        }
+      });
+    }
+    
+    // Setup pan and zoom functionality
+    function setupPanAndZoom(svg) {
+      let isPanning = false;
+      let startX, startY;
+      let translateX = 0, translateY = 0;
+      
+      // Enable panning with mouse drag
+      graphContainer.addEventListener('mousedown', (e) => {
+        if (e.button === 0) { // Left button
+          isPanning = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          graphContainer.style.cursor = 'grabbing';
+          e.preventDefault();
+        }
+      });
+      
+      document.addEventListener('mousemove', (e) => {
+        if (!isPanning) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        graphContainer.scrollLeft -= dx;
+        graphContainer.scrollTop -= dy;
+        
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+      
+      document.addEventListener('mouseup', () => {
+        if (isPanning) {
+          isPanning = false;
+          graphContainer.style.cursor = 'auto';
+        }
+      });
+      
+      // Add smooth zoom with wheel
+      graphContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        currentScale = Math.max(0.1, Math.min(2.5, currentScale + delta));
+        container.style.transform = `scale(${currentScale})`;
+      });
+    }
+    
+    // Zoom in button
+    document.getElementById('zoom-in').addEventListener('click', () => {
+      currentScale = Math.min(2.5, currentScale + 0.1);
+      container.style.transform = `scale(${currentScale})`;
+    });
+    
+    // Zoom out button
+    document.getElementById('zoom-out').addEventListener('click', () => {
+      currentScale = Math.max(0.1, currentScale - 0.1);
+      container.style.transform = `scale(${currentScale})`;
+    });
+    
+    // Reset zoom button
+    document.getElementById('reset-zoom').addEventListener('click', resetZoom);
+    
+    function resetZoom() {
+      currentScale = 1.0;
+      container.style.transform = `scale(${currentScale})`;
+      // Center the diagram
+      graphContainer.scrollLeft = 0;
+      graphContainer.scrollTop = 0;
+    }
+    
+    // Toggle search box
+    document.getElementById('toggle-search').addEventListener('click', () => {
+      const searchBox = document.getElementById('search-box');
+      searchBox.style.display = searchBox.style.display === 'none' ? 'block' : 'none';
+    });
+    
+    // Search functionality
+    document.getElementById('search-button').addEventListener('click', performSearch);
+    
+    // Search when Enter key is pressed in the search box
+    document.getElementById('entity-search').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+    
+    // Clear search
+    document.getElementById('clear-search').addEventListener('click', () => {
+      document.getElementById('entity-search').value = '';
+      clearHighlighting();
+    });
+    
+    function performSearch() {
+      const searchTerm = document.getElementById('entity-search').value.trim().toLowerCase();
+      
+      if (!searchTerm) {
+        clearHighlighting();
+        return;
+      }
+      
+      // Clear previous highlighting
+      clearHighlighting();
+      
+      // Find all nodes in the SVG
+      const svg = container.querySelector('svg');
+      const nodes = svg.querySelectorAll('.node');
+      
+      // Highlight matching nodes
+      nodes.forEach(node => {
+        const text = node.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          node.classList.add('highlighted');
+          highlighted.push(node);
+          
+          // Add a highlight effect
+          const rect = node.querySelector('polygon, ellipse');
+          if (rect) {
+            rect.setAttribute('stroke', '#ff0000');
+            rect.setAttribute('stroke-width', '3');
+          }
+        }
+      });
+      
+      // If found nodes, scroll to the first one
+      if (highlighted.length > 0) {
+        const rect = highlighted[0].getBoundingClientRect();
+        const containerRect = graphContainer.getBoundingClientRect();
+        
+        graphContainer.scrollLeft = rect.left - containerRect.left - 50;
+        graphContainer.scrollTop = rect.top - containerRect.top - 50;
+      }
+    }
+    
+    function clearHighlighting() {
+      highlighted.forEach(node => {
+        node.classList.remove('highlighted');
+        
+        // Reset the highlight effect
+        const rect = node.querySelector('polygon, ellipse');
+        if (rect) {
+          rect.setAttribute('stroke', '#000000');
+          rect.setAttribute('stroke-width', '1');
+        }
+      });
+      
+      highlighted = [];
+    }
+    
+    // Download SVG
+    document.getElementById('download-svg').addEventListener('click', () => {
+      const svg = container.querySelector('svg');
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svg);
+      
+      // Add namespaces
+      if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      
+      // Add namespace prefix
+      if (!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)) {
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+      }
+      
+      // Add XML declaration
+      source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+      
+      // Convert to data URI
+      const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+      
+      // Create a link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = '{{ diagram.name|replace(" ", "_") }}.svg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+  });
+</script>
+
+<style>
+  .highlighted {
+    filter: drop-shadow(0 0 5px red);
+  }
+</style>
+{% endblock %}

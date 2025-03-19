@@ -1,0 +1,11 @@
+table_name,url,description
+PER_ADDRESSES,https://etrm.live/etrm-12.2.2/etrm.oracle.com/pls/trm1222/etrm_pnav9e93.html?c_name=PER_ADDRESSES&c_owner=HR&c_type=TABLE,Address information for people
+PER_ALL_PEOPLE_F,https://etrm.live/etrm-12.2.2/etrm.oracle.com/pls/trm1222/etrm_pnav9226-2.html?c_name=PER_ALL_PEOPLE_F&c_owner=HR&c_type=TABLE,DateTracked table holding personal information for employees applicants and other people
+PER_ALL_ASSIGNMENTS_F,https://etrm.live/etrm-12.2.2/etrm.oracle.com/pls/trm1222/etrm_pnav00ce.html?c_name=PER_ALL_ASSIGNMENTS_F&c_owner=HR&c_type=TABLE,DateTracked table holding assignment information for employees
+PER_ASSESSMENTS,https://etrm.live/etrm-12.2.2/etrm.oracle.com/pls/trm1222/etrm_pnavdea9.html?c_name=PER_ASSESSMENTS&c_owner=HR&c_type=TABLE,Assessment information for people
+PER_PERSON_TYPES,https://etrm.live/etrm-12.2.2/etrm.oracle.com/pls/trm1222/etrm_pnav9a94.html?c_name=PER_PERSON_TYPES&c_owner=HR&c_type=TABLE,Classification types for different person categories
+EMPLOYEES,https://docs.oracle.com/cd/E11882_01/server.112/e10897/toc.htm#BHCCAEGD,HR sample schema table containing employee information
+DEPARTMENTS,https://docs.oracle.com/cd/E11882_01/server.112/e10897/toc.htm#BHCCIHFD,HR sample schema table containing department information
+JOBS,https://docs.oracle.com/cd/E11882_01/server.112/e10897/toc.htm#BHCCHBIB,HR sample schema table containing job listings and salary ranges
+LOCATIONS,https://docs.oracle.com/cd/E11882_01/server.112/e10897/toc.htm#BHCCGFAE,HR sample schema table containing address and location information
+REGIONS,https://docs.oracle.com/cd/E11882_01/server.112/e10897/toc.htm#BHCCHAGE,HR sample schema table containing region data for different countries

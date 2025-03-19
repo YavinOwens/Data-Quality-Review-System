@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ diagram.name }} - Simplified ERD View{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('list_erds') }}">All ERD Diagrams</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ diagram.name }}</li>
+                </ol>
+            </nav>
+            
+            <div class="alert alert-info">
+                <h4 class="alert-heading"><i class="fas fa-info-circle"></i> Simplified View Mode</h4>
+                <p>This is a simplified view of the ERD diagram that shows the table names and relationships without the visual complexity.</p>
+                <p>
+                    <a href="/erd/{{ diagram.slug }}?mode=graphviz" class="btn btn-sm btn-primary">
+                        <i class="fas fa-project-diagram"></i> Switch to Graphviz View
+                    </a>
+                    <a href="/erd/{{ diagram.slug }}?mode=pdf" class="btn btn-sm btn-info">
+                        <i class="fas fa-file-pdf"></i> Switch to PDF View
+                    </a>
+                    {% if dot_path %}
+                    <a href="{{ dot_path }}" class="btn btn-sm btn-secondary" download>
+                        <i class="fas fa-download"></i> Download DOT File
+                    </a>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-sm btn-success dropdown-toggle" type="button" id="exportPdfDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-file-pdf"></i> Export as PDF
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="exportPdfDropdown">
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A4">A4 Size</a>
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A3">A3 Size</a>
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A2">A2 Size (Recommended)</a>
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A1">A1 Size</a>
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A0">A0 Size (Largest)</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/export-pdf/{{ diagram.slug }}?size=A2&dpi=600">High-Resolution (600 DPI)</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-project-diagram"></i> {{ diagram.name }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <h5>Tables in this ERD ({{ tables|length }})</h5>
+                            <div class="form-group">
+                                <input type="text" id="table-search" class="form-control" placeholder="Search tables...">
+                            </div>
+                            <div class="list-group table-list" style="max-height: 500px; overflow-y: auto;">
+                                {% for table in tables %}
+                                <div class="list-group-item table-item">
+                                    <strong>{{ table }}</strong>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <h5>Relationships ({{ relationships|length }})</h5>
+                            <div class="form-group">
+                                <input type="text" id="relationship-search" class="form-control" placeholder="Filter relationships...">
+                            </div>
+                            <div class="list-group" style="max-height: 500px; overflow-y: auto;">
+                                {% for rel in relationships %}
+                                <div class="list-group-item relationship-item">
+                                    <strong>{{ rel[0] }}</strong> → <strong>{{ rel[1] }}</strong>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Table search functionality
+        const tableSearch = document.getElementById('table-search');
+        const tableItems = document.querySelectorAll('.table-item');
+        
+        tableSearch.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            tableItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+        
+        // Relationship search functionality
+        const relationshipSearch = document.getElementById('relationship-search');
+        const relationshipItems = document.querySelectorAll('.relationship-item');
+        
+        relationshipSearch.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            relationshipItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

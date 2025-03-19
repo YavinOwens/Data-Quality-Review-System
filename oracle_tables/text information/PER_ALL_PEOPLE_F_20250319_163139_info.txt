@@ -1,0 +1,31 @@
+Information for PER_ALL_PEOPLE_F_20250319_163139:
+==================================================
+
+property: table_name
+value: PER_ALL_PEOPLE_F
+
+property: owner
+value: HR
+
+property: table_name
+value: PER_ALL_PEOPLE_F
+
+property: description
+value: [PER_ALL_PEOPLE_F is the DateTracked table that holds personal
+information for employees, applicants, ex-employees, ex-applicants,
+contacts and other people.  The columns START_DATE,
+EFFECTIVE_START_DATE and EFFECTIVE_END_DATE are all maintained
+by DateTrack.  The START_DATE is the date when the first record for
+this person was created.  The earliest EFFECTIVE_START_DATE for a
+person is equal to the START_DATE.
+NOTE: Users must not enter information into the Developer Descriptive
+Flexfield columns. These are reserved for the use of localization and 
+verticalization teams, for entry and maintenance of legislative or 
+industry-specific data.
+
+property: primary_key
+value: PERSON_ID, EFFECTIVE_START_DATE, EFFECTIVE_END_DATE
+
+property: scrape_date
+value: 2025-03-19 16:31:39
+

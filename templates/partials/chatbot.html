@@ -1,0 +1,278 @@
+<!-- Chatbot Widget - Placeholder for future AI integration -->
+<div class="chatbot-container">
+    <div id="chatbot-panel" class="chatbot-panel">
+        <div class="chatbot-header">
+            <h5><i class="fas fa-robot"></i> Database Assistant</h5>
+            <button id="minimize-chat" class="btn-close"></button>
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <div class="message bot-message">
+                <div class="message-content">
+                    Welcome! I can help you analyze tables and ERDs. What would you like to know?
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="user-input" placeholder="Ask about tables or ERDs..." class="form-control">
+            <button id="send-message" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <i class="fas fa-comments"></i>
+    </button>
+</div>
+
+<style>
+    .chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display: block !important;
+        pointer-events: auto !important;
+    }
+    
+    .chatbot-toggle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #4C84FF;
+        color: white;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        font-size: 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .chatbot-toggle:hover {
+        transform: scale(1.05);
+        background-color: #3A6AD4;
+    }
+    
+    .chatbot-panel {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 350px;
+        height: 500px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        pointer-events: none;
+    }
+    
+    .chatbot-panel.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+    
+    .chatbot-header {
+        padding: 15px;
+        background-color: #4C84FF;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .chatbot-header .btn-close {
+        background: none;
+        color: white;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+    }
+    
+    .chatbot-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background-color: #f5f7fb;
+    }
+    
+    .message {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 18px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .user-message {
+        background-color: #4C84FF;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+    
+    .bot-message {
+        background-color: white;
+        color: #333;
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    .message-time {
+        font-size: 11px;
+        opacity: 0.7;
+        align-self: flex-end;
+        margin-top: 2px;
+    }
+    
+    .chatbot-input {
+        padding: 15px;
+        display: flex;
+        gap: 10px;
+        background-color: white;
+        border-top: 1px solid #eaeaea;
+    }
+    
+    .chatbot-input input {
+        flex: 1;
+        padding: 10px 15px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        outline: none;
+    }
+    
+    .chatbot-input button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #4C84FF;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    // Run code immediately and after DOM is loaded
+    function initChatbot() {
+        const toggleButton = document.getElementById('chatbot-toggle');
+        const chatPanel = document.getElementById('chatbot-panel');
+        const minimizeButton = document.getElementById('minimize-chat');
+        const sendButton = document.getElementById('send-message');
+        const userInput = document.getElementById('user-input');
+        const messagesContainer = document.getElementById('chatbot-messages');
+        
+        // Make sure toggle button is visible
+        if (toggleButton) toggleButton.style.display = 'flex';
+        
+        // Toggle chat panel
+        toggleButton.addEventListener('click', function() {
+            chatPanel.classList.toggle('active');
+        });
+        
+        // Minimize chat panel
+        minimizeButton.addEventListener('click', function() {
+            chatPanel.classList.remove('active');
+        });
+        
+        // Sample responses for the dummy chatbot
+        const sampleResponses = [
+            "I found {count} tables matching your query in the database.",
+            "Based on the ERD, there's a direct relationship between those tables.",
+            "The selected tables have {count} columns in common.",
+            "I can generate documentation for these tables. What format would you prefer?",
+            "Would you like me to compare the schema with the actual data?",
+            "The primary keys in this table are: {keys}.",
+            "I noticed several foreign key relationships that might be relevant to your question.",
+            "This table appears to be part of the HR module based on its relationships.",
+            "The data types are consistent across these related tables.",
+            "I've analyzed the CSV data and found some patterns you might find interesting."
+        ];
+        
+        // Function to add a message to the chat
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+            
+            const messageTime = document.createElement('div');
+            messageTime.className = 'message-time';
+            messageTime.textContent = 'Just now';
+            
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(messageTime);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Handle sending messages
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, true);
+            userInput.value = '';
+            
+            // Simulate bot thinking
+            setTimeout(() => {
+                // Generate random response
+                let response = sampleResponses[Math.floor(Math.random() * sampleResponses.length)];
+                
+                // Add some simple customization based on user input
+                if (message.toLowerCase().includes('table')) {
+                    response = response.replace('{count}', Math.floor(Math.random() * 20) + 5);
+                }
+                
+                if (message.toLowerCase().includes('key')) {
+                    response = response.replace('{keys}', 'ID, NAME, CODE');
+                }
+                
+                addMessage(response);
+            }, 1000);
+        }
+        
+        // Send button click
+        sendButton.addEventListener('click', sendMessage);
+        
+        // Enter key to send
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
+    
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', function() {
+        initChatbot();
+    });
+    
+    // Also try to initialize immediately
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(initChatbot, 1);
+    }
+</script>

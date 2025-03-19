@@ -1,0 +1,21 @@
+Information for PER_ADDRESSES_20250319_163137:
+==================================================
+
+property: table_name
+value: PER_ADDRESSES
+
+property: owner
+value: HR
+
+property: table_name
+value: PER_ADDRESSES
+
+property: description
+value: Address information for people.
+
+property: primary_key
+value: ADDRESS_ID
+
+property: scrape_date
+value: 2025-03-19 16:31:37
+

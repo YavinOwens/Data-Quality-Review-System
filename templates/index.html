@@ -1,0 +1,108 @@
+
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database HR Table Schemas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-4">
+            <h1>Database HR Table Schemas</h1>
+            <div class="d-flex gap-2">
+                <a href="/schemas" class="btn btn-success">View All Table Schemas</a>
+                <a href="/erds" class="btn btn-primary">View All ERD Diagrams</a>
+                <a href="/text-info" class="btn btn-info">View Text Information</a>
+            </div>
+        </div>
+        
+        <!-- ERD Diagrams Section as Accordion -->
+        {% if diagrams %}
+        <div class="accordion mb-4" id="erdAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingERDs">
+                    <button class="accordion-button bg-primary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseERDs" aria-expanded="false" aria-controls="collapseERDs">
+                        <strong>Entity Relationship Diagrams</strong>
+                    </button>
+                </h2>
+                <div id="collapseERDs" class="accordion-collapse collapse" aria-labelledby="headingERDs" data-bs-parent="#erdAccordion">
+                    <div class="accordion-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for diagram in diagrams %}
+                            <a href="/erd/{% if diagram.get('is_external', False) %}{{ diagram.name }}{% else %}{{ diagram.slug }}{% endif %}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">{{ diagram.name }}</h5>
+                                    <p class="mb-1">{{ diagram.description }}</p>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">View ERD</span>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Tables Section as Accordion -->
+        <div class="accordion" id="tablesAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTables">
+                    <button class="accordion-button bg-success text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTables" aria-expanded="true" aria-controls="collapseTables">
+                        <strong>Table Schemas</strong>
+                    </button>
+                </h2>
+                <div id="collapseTables" class="accordion-collapse collapse show" aria-labelledby="headingTables" data-bs-parent="#tablesAccordion">
+                    <div class="accordion-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Table Name</th>
+                                    <th>Description</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for table in tables %}
+                                <tr>
+                                    <td>{{ table.name }}</td>
+                                    <td>
+                                        {% if table.description %}
+                                        <div class="description-text" style="max-height: 150px; overflow-y: auto;">
+                                            {{ table.description | replace("\n", "<br>") | safe }}
+                                        </div>
+                                        {% else %}
+                                        <em class="text-muted">No description available</em>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="/table/{{ table.name }}" class="btn btn-primary">View Schema</a>
+                                            {% if table_erd_mapping and table_erd_mapping[table.name] %}
+                                                <a href="/erd/{{ table_erd_mapping[table.name] }}" target="_blank" class="btn btn-success">View ERD</a>
+                                            {% else %}
+                                                <button class="btn btn-secondary" disabled>No ERD</button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+    

@@ -1,0 +1,352 @@
+digraph "Oracle HR Entity Relationship Diagram" {
+  graph [rankdir=LR, splines=ortho, nodesep=0.8, ranksep=1.2, fontname="Arial", fontsize=12, bgcolor="#FFFFFF"];
+  node [shape=plaintext, fontname="Arial", fontsize=11];
+  edge [fontname="Arial", fontsize=10, dir="both", arrowsize=0.9];
+
+  "PER_ASSESSMENTS" [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+      <tr><td colspan="3" bgcolor="#4169E1" align="center"><font color="white" point-size="12"><b>PER_ASSESSMENTS</b></font></td></tr>
+      <tr bgcolor="#D3D3D3"><td align="center"><b>Column</b></td><td align="center"><b>Type</b></td><td align="center"><b>Key</b></td></tr>
+      <tr bgcolor="#FFE6E6"><td port="ASSESSMENT_ID" align="left">ASSESSMENT_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="darkred">PK</font></td></tr>
+      <tr><td port="BUSINESS_GROUP_ID" align="left">BUSINESS_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="OBJECT_VERSION_NUMBER" align="left">OBJECT_VERSION_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr bgcolor="#E6F0FF"><td port="PERSON_ID" align="left">PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="blue">FK</font></td></tr>
+      <tr><td port="ASSESSMENT_TYPE_ID" align="left">ASSESSMENT_TYPE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GROUP_DATE" align="left">GROUP_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GROUP_INITIATOR_ID" align="left">GROUP_INITIATOR_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr bgcolor="#E6F0FF"><td port="ASSESSOR_PERSON_ID" align="left">ASSESSOR_PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="blue">FK</font></td></tr>
+      <tr><td port="ASSESSMENT_GROUP_ID" align="left">ASSESSMENT_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSESSMENT_DATE" align="left">ASSESSMENT_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="STATUS" align="left">STATUS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSESSMENT_PERIOD_START_DATE" align="left">ASSESSMENT_PERIOD_START_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSESSMENT_PERIOD_END_DATE" align="left">ASSESSMENT_PERIOD_END_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COMMENTS" align="left">COMMENTS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TOTAL_SCORE" align="left">TOTAL_SCORE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="APPRAISAL_ID" align="left">APPRAISAL_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE_CATEGORY" align="left">ATTRIBUTE_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE1" align="left">ATTRIBUTE1</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE2" align="left">ATTRIBUTE2</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE3" align="left">ATTRIBUTE3</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE4" align="left">ATTRIBUTE4</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE5" align="left">ATTRIBUTE5</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE6" align="left">ATTRIBUTE6</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE7" align="left">ATTRIBUTE7</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE8" align="left">ATTRIBUTE8</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE9" align="left">ATTRIBUTE9</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE10" align="left">ATTRIBUTE10</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE11" align="left">ATTRIBUTE11</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE12" align="left">ATTRIBUTE12</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE13" align="left">ATTRIBUTE13</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE14" align="left">ATTRIBUTE14</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE15" align="left">ATTRIBUTE15</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE16" align="left">ATTRIBUTE16</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE17" align="left">ATTRIBUTE17</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE18" align="left">ATTRIBUTE18</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE19" align="left">ATTRIBUTE19</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE20" align="left">ATTRIBUTE20</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_DATE" align="left">LAST_UPDATE_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATED_BY" align="left">LAST_UPDATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_LOGIN" align="left">LAST_UPDATE_LOGIN</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATED_BY" align="left">CREATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATION_DATE" align="left">CREATION_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+    </table>
+  >, style="filled,rounded", fillcolor="#FFFFFF", color="#333333"];
+
+  "PER_ADDRESSES" [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+      <tr><td colspan="3" bgcolor="#4169E1" align="center"><font color="white" point-size="12"><b>PER_ADDRESSES</b></font></td></tr>
+      <tr bgcolor="#D3D3D3"><td align="center"><b>Column</b></td><td align="center"><b>Type</b></td><td align="center"><b>Key</b></td></tr>
+      <tr bgcolor="#FFE6E6"><td port="ADDRESS_ID" align="left">ADDRESS_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="darkred">PK</font></td></tr>
+      <tr><td port="BUSINESS_GROUP_ID" align="left">BUSINESS_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr bgcolor="#E6F0FF"><td port="PERSON_ID" align="left">PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="blue">FK</font></td></tr>
+      <tr><td port="DATE_" align="left">DATE_</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+    </table>
+  >, style="filled,rounded", fillcolor="#FFFFFF", color="#333333"];
+
+  "PER_ALL_ASSIGNMENTS_F" [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+      <tr><td colspan="3" bgcolor="#4169E1" align="center"><font color="white" point-size="12"><b>PER_ALL_ASSIGNMENTS_F</b></font></td></tr>
+      <tr bgcolor="#D3D3D3"><td align="center"><b>Column</b></td><td align="center"><b>Type</b></td><td align="center"><b>Key</b></td></tr>
+      <tr bgcolor="#FFE6E6"><td port="ASSIGNMENT_ID" align="left">ASSIGNMENT_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="darkred">PK</font></td></tr>
+      <tr><td port="EFFECTIVE_START_DATE" align="left">EFFECTIVE_START_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EFFECTIVE_END_DATE" align="left">EFFECTIVE_END_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BUSINESS_GROUP_ID" align="left">BUSINESS_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="RECRUITER_ID" align="left">RECRUITER_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GRADE_ID" align="left">GRADE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="POSITION_ID" align="left">POSITION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="JOB_ID" align="left">JOB_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSIGNMENT_STATUS_TYPE_ID" align="left">ASSIGNMENT_STATUS_TYPE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PAYROLL_ID" align="left">PAYROLL_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LOCATION_ID" align="left">LOCATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERSON_REFERRED_BY_ID" align="left">PERSON_REFERRED_BY_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SUPERVISOR_ID" align="left">SUPERVISOR_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SPECIAL_CEILING_STEP_ID" align="left">SPECIAL_CEILING_STEP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr bgcolor="#E6F0FF"><td port="PERSON_ID" align="left">PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="blue">FK</font></td></tr>
+      <tr><td port="RECRUITMENT_ACTIVITY_ID" align="left">RECRUITMENT_ACTIVITY_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SOURCE_ORGANIZATION_ID" align="left">SOURCE_ORGANIZATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ORGANIZATION_ID" align="left">ORGANIZATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PEOPLE_GROUP_ID" align="left">PEOPLE_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SOFT_CODING_KEYFLEX_ID" align="left">SOFT_CODING_KEYFLEX_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VACANCY_ID" align="left">VACANCY_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PAY_BASIS_ID" align="left">PAY_BASIS_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSIGNMENT_SEQUENCE" align="left">ASSIGNMENT_SEQUENCE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSIGNMENT_TYPE" align="left">ASSIGNMENT_TYPE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PRIMARY_FLAG" align="left">PRIMARY_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="APPLICATION_ID" align="left">APPLICATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSIGNMENT_NUMBER" align="left">ASSIGNMENT_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CHANGE_REASON" align="left">CHANGE_REASON</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COMMENT_ID" align="left">COMMENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DATE_PROBATION_END" align="left">DATE_PROBATION_END</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DEFAULT_CODE_COMB_ID" align="left">DEFAULT_CODE_COMB_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EMPLOYMENT_CATEGORY" align="left">EMPLOYMENT_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="FREQUENCY" align="left">FREQUENCY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="INTERNAL_ADDRESS_LINE" align="left">INTERNAL_ADDRESS_LINE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="MANAGER_FLAG" align="left">MANAGER_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NORMAL_HOURS" align="left">NORMAL_HOURS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERF_REVIEW_PERIOD" align="left">PERF_REVIEW_PERIOD</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERF_REVIEW_PERIOD_FREQUENCY" align="left">PERF_REVIEW_PERIOD_FREQUENCY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERIOD_OF_SERVICE_ID" align="left">PERIOD_OF_SERVICE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROBATION_PERIOD" align="left">PROBATION_PERIOD</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROBATION_UNIT" align="left">PROBATION_UNIT</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SAL_REVIEW_PERIOD" align="left">SAL_REVIEW_PERIOD</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SAL_REVIEW_PERIOD_FREQUENCY" align="left">SAL_REVIEW_PERIOD_FREQUENCY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SET_OF_BOOKS_ID" align="left">SET_OF_BOOKS_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SOURCE_TYPE" align="left">SOURCE_TYPE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TIME_NORMAL_FINISH" align="left">TIME_NORMAL_FINISH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TIME_NORMAL_START" align="left">TIME_NORMAL_START</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BARGAINING_UNIT_CODE" align="left">BARGAINING_UNIT_CODE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LABOUR_UNION_MEMBER_FLAG" align="left">LABOUR_UNION_MEMBER_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="HOURLY_SALARIED_CODE" align="left">HOURLY_SALARIED_CODE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CONTRACT_ID" align="left">CONTRACT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COLLECTIVE_AGREEMENT_ID" align="left">COLLECTIVE_AGREEMENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CAGR_ID_FLEX_NUM" align="left">CAGR_ID_FLEX_NUM</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CAGR_GRADE_DEF_ID" align="left">CAGR_GRADE_DEF_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ESTABLISHMENT_ID" align="left">ESTABLISHMENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REQUEST_ID" align="left">REQUEST_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_APPLICATION_ID" align="left">PROGRAM_APPLICATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_ID" align="left">PROGRAM_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_UPDATE_DATE" align="left">PROGRAM_UPDATE_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE_CATEGORY" align="left">ASS_ATTRIBUTE_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE1" align="left">ASS_ATTRIBUTE1</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE2" align="left">ASS_ATTRIBUTE2</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE3" align="left">ASS_ATTRIBUTE3</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE4" align="left">ASS_ATTRIBUTE4</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE5" align="left">ASS_ATTRIBUTE5</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE6" align="left">ASS_ATTRIBUTE6</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE7" align="left">ASS_ATTRIBUTE7</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE8" align="left">ASS_ATTRIBUTE8</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE9" align="left">ASS_ATTRIBUTE9</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE10" align="left">ASS_ATTRIBUTE10</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE11" align="left">ASS_ATTRIBUTE11</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE12" align="left">ASS_ATTRIBUTE12</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE13" align="left">ASS_ATTRIBUTE13</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE14" align="left">ASS_ATTRIBUTE14</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE15" align="left">ASS_ATTRIBUTE15</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE16" align="left">ASS_ATTRIBUTE16</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE17" align="left">ASS_ATTRIBUTE17</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE18" align="left">ASS_ATTRIBUTE18</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE19" align="left">ASS_ATTRIBUTE19</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE20" align="left">ASS_ATTRIBUTE20</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE21" align="left">ASS_ATTRIBUTE21</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE22" align="left">ASS_ATTRIBUTE22</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE23" align="left">ASS_ATTRIBUTE23</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE24" align="left">ASS_ATTRIBUTE24</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE25" align="left">ASS_ATTRIBUTE25</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE26" align="left">ASS_ATTRIBUTE26</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE27" align="left">ASS_ATTRIBUTE27</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE28" align="left">ASS_ATTRIBUTE28</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE29" align="left">ASS_ATTRIBUTE29</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASS_ATTRIBUTE30" align="left">ASS_ATTRIBUTE30</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_DATE" align="left">LAST_UPDATE_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATED_BY" align="left">LAST_UPDATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_LOGIN" align="left">LAST_UPDATE_LOGIN</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATED_BY" align="left">CREATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATION_DATE" align="left">CREATION_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TITLE" align="left">TITLE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="OBJECT_VERSION_NUMBER" align="left">OBJECT_VERSION_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NOTICE_PERIOD" align="left">NOTICE_PERIOD</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NOTICE_PERIOD_UOM" align="left">NOTICE_PERIOD_UOM</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EMPLOYEE_CATEGORY" align="left">EMPLOYEE_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="WORK_AT_HOME" align="left">WORK_AT_HOME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="JOB_POST_SOURCE_NAME" align="left">JOB_POST_SOURCE_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="POSTING_CONTENT_ID" align="left">POSTING_CONTENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERIOD_OF_PLACEMENT_DATE_START" align="left">PERIOD_OF_PLACEMENT_DATE_START</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VENDOR_ID" align="left">VENDOR_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VENDOR_EMPLOYEE_NUMBER" align="left">VENDOR_EMPLOYEE_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VENDOR_ASSIGNMENT_NUMBER" align="left">VENDOR_ASSIGNMENT_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ASSIGNMENT_CATEGORY" align="left">ASSIGNMENT_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROJECT_TITLE" align="left">PROJECT_TITLE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="APPLICANT_RANK" align="left">APPLICANT_RANK</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VENDOR_SITE_ID" align="left">VENDOR_SITE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PO_HEADER_ID" align="left">PO_HEADER_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PO_LINE_ID" align="left">PO_LINE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROJECTED_ASSIGNMENT_END" align="left">PROJECTED_ASSIGNMENT_END</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GRADE_LADDER_PGM_ID" align="left">GRADE_LADDER_PGM_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SUPERVISOR_ASSIGNMENT_ID" align="left">SUPERVISOR_ASSIGNMENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+    </table>
+  >, style="filled,rounded", fillcolor="#FFFFFF", color="#333333"];
+
+  "PER_ALL_PEOPLE_F" [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+      <tr><td colspan="3" bgcolor="#4169E1" align="center"><font color="white" point-size="12"><b>PER_ALL_PEOPLE_F</b></font></td></tr>
+      <tr bgcolor="#D3D3D3"><td align="center"><b>Column</b></td><td align="center"><b>Type</b></td><td align="center"><b>Key</b></td></tr>
+      <tr bgcolor="#FFE6E6"><td port="PERSON_ID" align="left">PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"><font color="darkred">PK</font></td></tr>
+      <tr><td port="EFFECTIVE_START_DATE" align="left">EFFECTIVE_START_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EFFECTIVE_END_DATE" align="left">EFFECTIVE_END_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BUSINESS_GROUP_ID" align="left">BUSINESS_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PERSON_TYPE_ID" align="left">PERSON_TYPE_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_NAME" align="left">LAST_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="START_DATE" align="left">START_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="APPLICANT_NUMBER" align="left">APPLICANT_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BACKGROUND_CHECK_STATUS" align="left">BACKGROUND_CHECK_STATUS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BACKGROUND_DATE_CHECK" align="left">BACKGROUND_DATE_CHECK</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BLOOD_TYPE" align="left">BLOOD_TYPE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COMMENT_ID" align="left">COMMENT_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CORRESPONDENCE_LANGUAGE" align="left">CORRESPONDENCE_LANGUAGE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CURRENT_APPLICANT_FLAG" align="left">CURRENT_APPLICANT_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CURRENT_EMP_OR_APL_FLAG" align="left">CURRENT_EMP_OR_APL_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CURRENT_EMPLOYEE_FLAG" align="left">CURRENT_EMPLOYEE_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DATE_EMPLOYEE_DATA_VERIFIED" align="left">DATE_EMPLOYEE_DATA_VERIFIED</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DATE_OF_BIRTH" align="left">DATE_OF_BIRTH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EMAIL_ADDRESS" align="left">EMAIL_ADDRESS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EMPLOYEE_NUMBER" align="left">EMPLOYEE_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="EXPENSE_CHECK_SEND_TO_ADDRESS" align="left">EXPENSE_CHECK_SEND_TO_ADDRESS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="FAST_PATH_EMPLOYEE" align="left">FAST_PATH_EMPLOYEE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="FIRST_NAME" align="left">FIRST_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="FTE_CAPACITY" align="left">FTE_CAPACITY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="FULL_NAME" align="left">FULL_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="HOLD_APPLICANT_DATE_UNTIL" align="left">HOLD_APPLICANT_DATE_UNTIL</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="HONORS" align="left">HONORS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="INTERNAL_LOCATION" align="left">INTERNAL_LOCATION</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="KNOWN_AS" align="left">KNOWN_AS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_MEDICAL_TEST_BY" align="left">LAST_MEDICAL_TEST_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_MEDICAL_TEST_DATE" align="left">LAST_MEDICAL_TEST_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="MAILSTOP" align="left">MAILSTOP</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="MARITAL_STATUS" align="left">MARITAL_STATUS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="MIDDLE_NAMES" align="left">MIDDLE_NAMES</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NATIONALITY" align="left">NATIONALITY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NATIONAL_IDENTIFIER" align="left">NATIONAL_IDENTIFIER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="OFFICE_NUMBER" align="left">OFFICE_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ON_MILITARY_SERVICE" align="left">ON_MILITARY_SERVICE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ORDER_NAME" align="left">ORDER_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PRE_NAME_ADJUNCT" align="left">PRE_NAME_ADJUNCT</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PREVIOUS_LAST_NAME" align="left">PREVIOUS_LAST_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROJECTED_START_DATE" align="left">PROJECTED_START_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REHIRE_AUTHORIZOR" align="left">REHIRE_AUTHORIZOR</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REHIRE_REASON" align="left">REHIRE_REASON</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REHIRE_RECOMMENDATION" align="left">REHIRE_RECOMMENDATION</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="RESUME_EXISTS" align="left">RESUME_EXISTS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="RESUME_LAST_UPDATED" align="left">RESUME_LAST_UPDATED</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REGISTERED_DISABLED_FLAG" align="left">REGISTERED_DISABLED_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SECOND_PASSPORT_EXISTS" align="left">SECOND_PASSPORT_EXISTS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SEX" align="left">SEX</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="STUDENT_STATUS" align="left">STUDENT_STATUS</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="SUFFIX" align="left">SUFFIX</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TITLE" align="left">TITLE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="VENDOR_ID" align="left">VENDOR_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="WORK_SCHEDULE" align="left">WORK_SCHEDULE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="WORK_TELEPHONE" align="left">WORK_TELEPHONE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_PLN_NO" align="left">COORD_BEN_MED_PLN_NO</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_NO_CVG_FLAG" align="left">COORD_BEN_NO_CVG_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DPDNT_ADOPTION_DATE" align="left">DPDNT_ADOPTION_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DPDNT_VLNTRY_SVCE_FLAG" align="left">DPDNT_VLNTRY_SVCE_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="RECEIPT_OF_DEATH_CERT_DATE" align="left">RECEIPT_OF_DEATH_CERT_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="USES_TOBACCO_FLAG" align="left">USES_TOBACCO_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="BENEFIT_GROUP_ID" align="left">BENEFIT_GROUP_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REQUEST_ID" align="left">REQUEST_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_APPLICATION_ID" align="left">PROGRAM_APPLICATION_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_ID" align="left">PROGRAM_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PROGRAM_UPDATE_DATE" align="left">PROGRAM_UPDATE_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE_CATEGORY" align="left">ATTRIBUTE_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE1" align="left">ATTRIBUTE1</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE2" align="left">ATTRIBUTE2</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE3" align="left">ATTRIBUTE3</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE4" align="left">ATTRIBUTE4</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE5" align="left">ATTRIBUTE5</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE6" align="left">ATTRIBUTE6</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE7" align="left">ATTRIBUTE7</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE8" align="left">ATTRIBUTE8</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE9" align="left">ATTRIBUTE9</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE10" align="left">ATTRIBUTE10</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE11" align="left">ATTRIBUTE11</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE12" align="left">ATTRIBUTE12</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE13" align="left">ATTRIBUTE13</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE14" align="left">ATTRIBUTE14</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE15" align="left">ATTRIBUTE15</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE16" align="left">ATTRIBUTE16</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE17" align="left">ATTRIBUTE17</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE18" align="left">ATTRIBUTE18</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE19" align="left">ATTRIBUTE19</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE20" align="left">ATTRIBUTE20</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE21" align="left">ATTRIBUTE21</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE22" align="left">ATTRIBUTE22</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE23" align="left">ATTRIBUTE23</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE24" align="left">ATTRIBUTE24</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE25" align="left">ATTRIBUTE25</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE26" align="left">ATTRIBUTE26</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE27" align="left">ATTRIBUTE27</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE28" align="left">ATTRIBUTE28</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE29" align="left">ATTRIBUTE29</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ATTRIBUTE30" align="left">ATTRIBUTE30</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_DATE" align="left">LAST_UPDATE_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATED_BY" align="left">LAST_UPDATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LAST_UPDATE_LOGIN" align="left">LAST_UPDATE_LOGIN</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATED_BY" align="left">CREATED_BY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CREATION_DATE" align="left">CREATION_DATE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION_CATEGORY" align="left">PER_INFORMATION_CATEGORY</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION1" align="left">PER_INFORMATION1</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION2" align="left">PER_INFORMATION2</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION3" align="left">PER_INFORMATION3</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION4" align="left">PER_INFORMATION4</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION5" align="left">PER_INFORMATION5</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION6" align="left">PER_INFORMATION6</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION7" align="left">PER_INFORMATION7</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION8" align="left">PER_INFORMATION8</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION9" align="left">PER_INFORMATION9</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION10" align="left">PER_INFORMATION10</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION11" align="left">PER_INFORMATION11</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION12" align="left">PER_INFORMATION12</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION13" align="left">PER_INFORMATION13</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION14" align="left">PER_INFORMATION14</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION15" align="left">PER_INFORMATION15</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION16" align="left">PER_INFORMATION16</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION17" align="left">PER_INFORMATION17</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION18" align="left">PER_INFORMATION18</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION19" align="left">PER_INFORMATION19</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION20" align="left">PER_INFORMATION20</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION21" align="left">PER_INFORMATION21</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION22" align="left">PER_INFORMATION22</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION23" align="left">PER_INFORMATION23</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION24" align="left">PER_INFORMATION24</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION25" align="left">PER_INFORMATION25</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION26" align="left">PER_INFORMATION26</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION27" align="left">PER_INFORMATION27</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION28" align="left">PER_INFORMATION28</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION29" align="left">PER_INFORMATION29</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PER_INFORMATION30" align="left">PER_INFORMATION30</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="OBJECT_VERSION_NUMBER" align="left">OBJECT_VERSION_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="DATE_OF_DEATH" align="left">DATE_OF_DEATH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="ORIGINAL_DATE_OF_HIRE" align="left">ORIGINAL_DATE_OF_HIRE</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="TOWN_OF_BIRTH" align="left">TOWN_OF_BIRTH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="REGION_OF_BIRTH" align="left">REGION_OF_BIRTH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COUNTRY_OF_BIRTH" align="left">COUNTRY_OF_BIRTH</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GLOBAL_PERSON_ID" align="left">GLOBAL_PERSON_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_PL_NAME" align="left">COORD_BEN_MED_PL_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_INSR_CRR_NAME" align="left">COORD_BEN_MED_INSR_CRR_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_INSR_CRR_IDENT" align="left">COORD_BEN_MED_INSR_CRR_IDENT</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_EXT_ER" align="left">COORD_BEN_MED_EXT_ER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_CVG_STRT_DT" align="left">COORD_BEN_MED_CVG_STRT_DT</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="COORD_BEN_MED_CVG_END_DT" align="left">COORD_BEN_MED_CVG_END_DT</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="PARTY_ID" align="left">PARTY_ID</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="NPW_NUMBER" align="left">NPW_NUMBER</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="CURRENT_NPW_FLAG" align="left">CURRENT_NPW_FLAG</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="GLOBAL_NAME" align="left">GLOBAL_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+      <tr><td port="LOCAL_NAME" align="left">LOCAL_NAME</td><td align="left">VARCHAR2</td><td align="center"></td></tr>
+    </table>
+  >, style="filled,rounded", fillcolor="#FFFFFF", color="#333333"];
+
+  "PER_ASSESSMENTS":"PERSON_ID" -> "PER_ALL_PEOPLE_F":"PERSON_ID" [arrowhead=none, arrowtail=crow, headlabel="1", taillabel="n", color="#0066CC", penwidth=1.2, fontcolor="#333333"];
+  "PER_ADDRESSES":"PERSON_ID" -> "PER_ALL_PEOPLE_F":"PERSON_ID" [arrowhead=none, arrowtail=crow, headlabel="1", taillabel="n", color="#0066CC", penwidth=1.2, fontcolor="#333333"];
+  "PER_ALL_ASSIGNMENTS_F":"PERSON_ID" -> "PER_ALL_PEOPLE_F":"PERSON_ID" [arrowhead=none, arrowtail=crow, headlabel="1", taillabel="n", color="#0066CC", penwidth=1.2, fontcolor="#333333"];
+  "PER_ASSESSMENTS":"ASSESSOR_PERSON_ID" -> "PER_ALL_PEOPLE_F":"PERSON_ID" [arrowhead=none, arrowtail=crow, headlabel="1", taillabel="n", color="#0066CC", penwidth=1.2, fontcolor="#333333"];
+}

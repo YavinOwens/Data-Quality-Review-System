@@ -1,0 +1,30 @@
+Information for PER_ALL_ASSIGNMENTS_F_20250319_163649:
+==================================================
+
+property: table_name
+value: PER_ALL_ASSIGNMENTS_F
+
+property: owner
+value: HR
+
+property: table_name
+value: PER_ALL_ASSIGNMENTS_F
+
+property: description
+value: PER_ALL_ASSIGNMENTS_F is the DateTracked table that holds information
+about employee assignments.  It also holds details of assignments for
+which an applicant has applied.  The ASSIGNMENT_TYPE is E for an
+employee assignment, and A for an applicant assignment.  Employees
+must have at least one employee assignment at all times in a period of
+service, and each assignment must have a unique number.  Employees can
+have multiple assignments at any time, but there must always be a
+designated primary assignment.  Applicants must have at least one
+applicant assignment throughout their application.  Each assignment
+has an assignment status that can change over time.
+
+property: primary_key
+value: ASSIGNMENT_ID, EFFECTIVE_START_DATE, EFFECTIVE_END_DATE
+
+property: scrape_date
+value: 2025-03-19 16:36:49
+

@@ -1,0 +1,377 @@
+table_name,column_name,data_type,nullable
+PER_ADDRESSES,ADDRESS_ID,VARCHAR2,Y
+PER_ADDRESSES,BUSINESS_GROUP_ID,VARCHAR2,Y
+PER_ADDRESSES,PERSON_ID,VARCHAR2,Y
+PER_ADDRESSES,DATE_,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PERSON_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,EFFECTIVE_START_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,EFFECTIVE_END_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,BUSINESS_GROUP_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PERSON_TYPE_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,START_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,APPLICANT_NUMBER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,BACKGROUND_CHECK_STATUS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,BACKGROUND_DATE_CHECK,VARCHAR2,Y
+PER_ALL_PEOPLE_F,BLOOD_TYPE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COMMENT_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CORRESPONDENCE_LANGUAGE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CURRENT_APPLICANT_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CURRENT_EMP_OR_APL_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CURRENT_EMPLOYEE_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,DATE_EMPLOYEE_DATA_VERIFIED,VARCHAR2,Y
+PER_ALL_PEOPLE_F,DATE_OF_BIRTH,VARCHAR2,Y
+PER_ALL_PEOPLE_F,EMAIL_ADDRESS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,EMPLOYEE_NUMBER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,EXPENSE_CHECK_SEND_TO_ADDRESS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,FAST_PATH_EMPLOYEE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,FIRST_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,FTE_CAPACITY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,FULL_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,HOLD_APPLICANT_DATE_UNTIL,VARCHAR2,Y
+PER_ALL_PEOPLE_F,HONORS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,INTERNAL_LOCATION,VARCHAR2,Y
+PER_ALL_PEOPLE_F,KNOWN_AS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_MEDICAL_TEST_BY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_MEDICAL_TEST_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,MAILSTOP,VARCHAR2,Y
+PER_ALL_PEOPLE_F,MARITAL_STATUS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,MIDDLE_NAMES,VARCHAR2,Y
+PER_ALL_PEOPLE_F,NATIONALITY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,NATIONAL_IDENTIFIER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,OFFICE_NUMBER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ON_MILITARY_SERVICE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ORDER_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PRE_NAME_ADJUNCT,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PREVIOUS_LAST_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PROJECTED_START_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REHIRE_AUTHORIZOR,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REHIRE_REASON,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REHIRE_RECOMMENDATION,VARCHAR2,Y
+PER_ALL_PEOPLE_F,RESUME_EXISTS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,RESUME_LAST_UPDATED,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REGISTERED_DISABLED_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,SECOND_PASSPORT_EXISTS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,SEX,VARCHAR2,Y
+PER_ALL_PEOPLE_F,STUDENT_STATUS,VARCHAR2,Y
+PER_ALL_PEOPLE_F,SUFFIX,VARCHAR2,Y
+PER_ALL_PEOPLE_F,TITLE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,VENDOR_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,WORK_SCHEDULE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,WORK_TELEPHONE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_PLN_NO,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_NO_CVG_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,DPDNT_ADOPTION_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,DPDNT_VLNTRY_SVCE_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,RECEIPT_OF_DEATH_CERT_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,USES_TOBACCO_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,BENEFIT_GROUP_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REQUEST_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PROGRAM_APPLICATION_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PROGRAM_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PROGRAM_UPDATE_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE_CATEGORY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE1,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE2,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE3,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE4,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE5,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE6,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE7,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE8,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE9,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE10,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE11,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE12,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE13,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE14,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE15,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE16,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE17,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE18,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE19,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE20,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE21,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE22,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE23,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE24,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE25,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE26,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE27,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE28,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE29,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ATTRIBUTE30,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_UPDATE_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_UPDATED_BY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LAST_UPDATE_LOGIN,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CREATED_BY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CREATION_DATE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION_CATEGORY,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION1,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION2,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION3,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION4,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION5,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION6,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION7,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION8,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION9,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION10,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION11,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION12,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION13,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION14,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION15,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION16,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION17,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION18,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION19,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION20,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION21,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION22,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION23,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION24,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION25,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION26,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION27,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION28,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION29,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PER_INFORMATION30,VARCHAR2,Y
+PER_ALL_PEOPLE_F,OBJECT_VERSION_NUMBER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,DATE_OF_DEATH,VARCHAR2,Y
+PER_ALL_PEOPLE_F,ORIGINAL_DATE_OF_HIRE,VARCHAR2,Y
+PER_ALL_PEOPLE_F,TOWN_OF_BIRTH,VARCHAR2,Y
+PER_ALL_PEOPLE_F,REGION_OF_BIRTH,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COUNTRY_OF_BIRTH,VARCHAR2,Y
+PER_ALL_PEOPLE_F,GLOBAL_PERSON_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_PL_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_INSR_CRR_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_INSR_CRR_IDENT,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_EXT_ER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_CVG_STRT_DT,VARCHAR2,Y
+PER_ALL_PEOPLE_F,COORD_BEN_MED_CVG_END_DT,VARCHAR2,Y
+PER_ALL_PEOPLE_F,PARTY_ID,VARCHAR2,Y
+PER_ALL_PEOPLE_F,NPW_NUMBER,VARCHAR2,Y
+PER_ALL_PEOPLE_F,CURRENT_NPW_FLAG,VARCHAR2,Y
+PER_ALL_PEOPLE_F,GLOBAL_NAME,VARCHAR2,Y
+PER_ALL_PEOPLE_F,LOCAL_NAME,VARCHAR2,Y
+EMPLOYEES,Example: Deleting a Table Column,Unknown,Unknown
+EMPLOYEES,Example: Adding a New Table Constraint,Unknown,Unknown
+EMPLOYEES,Example: Modifying an Existing Table Constraint,Unknown,Unknown
+EMPLOYEES,Example: Deleting a Table Constraint,Unknown,Unknown
+EMPLOYEES,Example: Loading Data into a Table,Unknown,Unknown
+EMPLOYEES,Deleting a Table,Unknown,Unknown
+EMPLOYEES,"Managing Indexes
+
+About Indexes
+
+Indexes and Performance
+Index Attributes
+
+
+Viewing Indexes
+Example: Creating an Index
+Example: Deleting an Index",Unknown,Unknown
+EMPLOYEES,"About Indexes
+
+Indexes and Performance
+Index Attributes",Unknown,Unknown
+EMPLOYEES,Indexes and Performance,Unknown,Unknown
+EMPLOYEES,Index Attributes,Unknown,Unknown
+EMPLOYEES,Viewing Indexes,Unknown,Unknown
+EMPLOYEES,Example: Creating an Index,Unknown,Unknown
+EMPLOYEES,Example: Deleting an Index,Unknown,Unknown
+EMPLOYEES,"Managing Views
+
+About Views
+Displaying Views
+Example: Creating a View
+Example: Deleting a View",Unknown,Unknown
+EMPLOYEES,About Views,Unknown,Unknown
+EMPLOYEES,Displaying Views,Unknown,Unknown
+EMPLOYEES,Example: Creating a View,Unknown,Unknown
+EMPLOYEES,Example: Deleting a View,Unknown,Unknown
+EMPLOYEES,"Managing Program Code Stored in the Database
+
+About Program Code Stored in the Database
+Validating (Compiling) Invalid Schema Objects",Unknown,Unknown
+EMPLOYEES,About Program Code Stored in the Database,Unknown,Unknown
+EMPLOYEES,Validating (Compiling) Invalid Schema Objects,Unknown,Unknown
+EMPLOYEES,Working with Other Schema Objects,Unknown,Unknown
+EMPLOYEES,Schemas: Oracle By Example Series,Unknown,Unknown
+DEPARTMENTS,Example: Deleting a Table Column,Unknown,Unknown
+DEPARTMENTS,Example: Adding a New Table Constraint,Unknown,Unknown
+DEPARTMENTS,Example: Modifying an Existing Table Constraint,Unknown,Unknown
+DEPARTMENTS,Example: Deleting a Table Constraint,Unknown,Unknown
+DEPARTMENTS,Example: Loading Data into a Table,Unknown,Unknown
+DEPARTMENTS,Deleting a Table,Unknown,Unknown
+DEPARTMENTS,"Managing Indexes
+
+About Indexes
+
+Indexes and Performance
+Index Attributes
+
+
+Viewing Indexes
+Example: Creating an Index
+Example: Deleting an Index",Unknown,Unknown
+DEPARTMENTS,"About Indexes
+
+Indexes and Performance
+Index Attributes",Unknown,Unknown
+DEPARTMENTS,Indexes and Performance,Unknown,Unknown
+DEPARTMENTS,Index Attributes,Unknown,Unknown
+DEPARTMENTS,Viewing Indexes,Unknown,Unknown
+DEPARTMENTS,Example: Creating an Index,Unknown,Unknown
+DEPARTMENTS,Example: Deleting an Index,Unknown,Unknown
+DEPARTMENTS,"Managing Views
+
+About Views
+Displaying Views
+Example: Creating a View
+Example: Deleting a View",Unknown,Unknown
+DEPARTMENTS,About Views,Unknown,Unknown
+DEPARTMENTS,Displaying Views,Unknown,Unknown
+DEPARTMENTS,Example: Creating a View,Unknown,Unknown
+DEPARTMENTS,Example: Deleting a View,Unknown,Unknown
+DEPARTMENTS,"Managing Program Code Stored in the Database
+
+About Program Code Stored in the Database
+Validating (Compiling) Invalid Schema Objects",Unknown,Unknown
+DEPARTMENTS,About Program Code Stored in the Database,Unknown,Unknown
+DEPARTMENTS,Validating (Compiling) Invalid Schema Objects,Unknown,Unknown
+DEPARTMENTS,Working with Other Schema Objects,Unknown,Unknown
+DEPARTMENTS,Schemas: Oracle By Example Series,Unknown,Unknown
+JOBS,Example: Deleting a Table Column,Unknown,Unknown
+JOBS,Example: Adding a New Table Constraint,Unknown,Unknown
+JOBS,Example: Modifying an Existing Table Constraint,Unknown,Unknown
+JOBS,Example: Deleting a Table Constraint,Unknown,Unknown
+JOBS,Example: Loading Data into a Table,Unknown,Unknown
+JOBS,Deleting a Table,Unknown,Unknown
+JOBS,"Managing Indexes
+
+About Indexes
+
+Indexes and Performance
+Index Attributes
+
+
+Viewing Indexes
+Example: Creating an Index
+Example: Deleting an Index",Unknown,Unknown
+JOBS,"About Indexes
+
+Indexes and Performance
+Index Attributes",Unknown,Unknown
+JOBS,Indexes and Performance,Unknown,Unknown
+JOBS,Index Attributes,Unknown,Unknown
+JOBS,Viewing Indexes,Unknown,Unknown
+JOBS,Example: Creating an Index,Unknown,Unknown
+JOBS,Example: Deleting an Index,Unknown,Unknown
+JOBS,"Managing Views
+
+About Views
+Displaying Views
+Example: Creating a View
+Example: Deleting a View",Unknown,Unknown
+JOBS,About Views,Unknown,Unknown
+JOBS,Displaying Views,Unknown,Unknown
+JOBS,Example: Creating a View,Unknown,Unknown
+JOBS,Example: Deleting a View,Unknown,Unknown
+JOBS,"Managing Program Code Stored in the Database
+
+About Program Code Stored in the Database
+Validating (Compiling) Invalid Schema Objects",Unknown,Unknown
+JOBS,About Program Code Stored in the Database,Unknown,Unknown
+JOBS,Validating (Compiling) Invalid Schema Objects,Unknown,Unknown
+JOBS,Working with Other Schema Objects,Unknown,Unknown
+JOBS,Schemas: Oracle By Example Series,Unknown,Unknown
+LOCATIONS,Example: Deleting a Table Column,Unknown,Unknown
+LOCATIONS,Example: Adding a New Table Constraint,Unknown,Unknown
+LOCATIONS,Example: Modifying an Existing Table Constraint,Unknown,Unknown
+LOCATIONS,Example: Deleting a Table Constraint,Unknown,Unknown
+LOCATIONS,Example: Loading Data into a Table,Unknown,Unknown
+LOCATIONS,Deleting a Table,Unknown,Unknown
+LOCATIONS,"Managing Indexes
+
+About Indexes
+
+Indexes and Performance
+Index Attributes
+
+
+Viewing Indexes
+Example: Creating an Index
+Example: Deleting an Index",Unknown,Unknown
+LOCATIONS,"About Indexes
+
+Indexes and Performance
+Index Attributes",Unknown,Unknown
+LOCATIONS,Indexes and Performance,Unknown,Unknown
+LOCATIONS,Index Attributes,Unknown,Unknown
+LOCATIONS,Viewing Indexes,Unknown,Unknown
+LOCATIONS,Example: Creating an Index,Unknown,Unknown
+LOCATIONS,Example: Deleting an Index,Unknown,Unknown
+LOCATIONS,"Managing Views
+
+About Views
+Displaying Views
+Example: Creating a View
+Example: Deleting a View",Unknown,Unknown
+LOCATIONS,About Views,Unknown,Unknown
+LOCATIONS,Displaying Views,Unknown,Unknown
+LOCATIONS,Example: Creating a View,Unknown,Unknown
+LOCATIONS,Example: Deleting a View,Unknown,Unknown
+LOCATIONS,"Managing Program Code Stored in the Database
+
+About Program Code Stored in the Database
+Validating (Compiling) Invalid Schema Objects",Unknown,Unknown
+LOCATIONS,About Program Code Stored in the Database,Unknown,Unknown
+LOCATIONS,Validating (Compiling) Invalid Schema Objects,Unknown,Unknown
+LOCATIONS,Working with Other Schema Objects,Unknown,Unknown
+LOCATIONS,Schemas: Oracle By Example Series,Unknown,Unknown
+REGIONS,Example: Deleting a Table Column,Unknown,Unknown
+REGIONS,Example: Adding a New Table Constraint,Unknown,Unknown
+REGIONS,Example: Modifying an Existing Table Constraint,Unknown,Unknown
+REGIONS,Example: Deleting a Table Constraint,Unknown,Unknown
+REGIONS,Example: Loading Data into a Table,Unknown,Unknown
+REGIONS,Deleting a Table,Unknown,Unknown
+REGIONS,"Managing Indexes
+
+About Indexes
+
+Indexes and Performance
+Index Attributes
+
+
+Viewing Indexes
+Example: Creating an Index
+Example: Deleting an Index",Unknown,Unknown
+REGIONS,"About Indexes
+
+Indexes and Performance
+Index Attributes",Unknown,Unknown
+REGIONS,Indexes and Performance,Unknown,Unknown
+REGIONS,Index Attributes,Unknown,Unknown
+REGIONS,Viewing Indexes,Unknown,Unknown
+REGIONS,Example: Creating an Index,Unknown,Unknown
+REGIONS,Example: Deleting an Index,Unknown,Unknown
+REGIONS,"Managing Views
+
+About Views
+Displaying Views
+Example: Creating a View
+Example: Deleting a View",Unknown,Unknown
+REGIONS,About Views,Unknown,Unknown
+REGIONS,Displaying Views,Unknown,Unknown
+REGIONS,Example: Creating a View,Unknown,Unknown
+REGIONS,Example: Deleting a View,Unknown,Unknown
+REGIONS,"Managing Program Code Stored in the Database
+
+About Program Code Stored in the Database
+Validating (Compiling) Invalid Schema Objects",Unknown,Unknown
+REGIONS,About Program Code Stored in the Database,Unknown,Unknown
+REGIONS,Validating (Compiling) Invalid Schema Objects,Unknown,Unknown
+REGIONS,Working with Other Schema Objects,Unknown,Unknown
+REGIONS,Schemas: Oracle By Example Series,Unknown,Unknown

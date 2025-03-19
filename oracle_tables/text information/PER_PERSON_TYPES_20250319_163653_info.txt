@@ -1,0 +1,22 @@
+Information for PER_PERSON_TYPES_20250319_163653:
+==================================================
+
+property: table_name
+value: PER_PERSON_TYPES
+
+property: owner
+value: HR
+
+property: table_name
+value: PER_PERSON_TYPES
+
+property: description
+value: PER_PERSON_TYPES holds the list of names that may be used when
+entering or changing person types.  Valid person types for a specific
+function are selected by joining to PER_FORM_FUNCTIONS.  At any time,
+only one active USER_PERSON_TYPE can be the default for a
+SYSTEM_PERSON_TYPE.
+
+property: scrape_date
+value: 2025-03-19 16:36:53
+
