@@ -1,0 +1,116 @@
+# Address Validation Findings Report
+## Version History
+| Version | Date | Author | Changes |
+|---------|------|---------|---------|
+| 1.0 | [Current Date] | [Author] | Initial template creation |
+
+## Executive Summary
+This report presents the findings from the address validation exercise conducted using the extract_address_components.sql and create_transformation_log.sql procedures. The analysis focuses on two key aspects:
+1. House number extraction and validation
+2. Postcode format validation and standardization
+
+## Minimum Components for Data Matching
+The following components are required for successful address matching:
+1. House Number
+   - Must be present at the start of the address
+   - Can include letters (e.g., "123A")
+   - Must be followed by a space
+
+2. Postcode
+   - Must follow UK postcode format
+   - Must be present in the address
+   - Must be in the correct position (usually at the end)
+
+## Findings
+
+### 1. House Number Analysis
+#### Overview
+- Total addresses processed: [Number]
+- Addresses with valid house numbers: [Number]
+- Success rate: [Percentage]%
+
+#### Details
+- Pattern used: `^[0-9]+[A-Za-z]*`
+- Valid formats:
+  - Simple numbers (e.g., "123")
+  - Numbers with letters (e.g., "123A")
+  - Numbers with multiple letters (e.g., "123AB")
+
+#### Issues Identified
+1. Missing house numbers
+2. House numbers in incorrect position
+3. Non-standard formats
+
+### 2. Postcode Analysis
+#### Overview
+- Total addresses processed: [Number]
+- Addresses with valid postcodes: [Number]
+- Success rate: [Percentage]%
+
+#### Standard Format Validation
+- Pattern used: [Postcode validation pattern]
+- Valid formats:
+  - Standard UK format (e.g., "SW1A 1AA")
+  - Special cases (e.g., "BF1 1AA" for British Forces)
+
+#### Issues Identified
+1. Non-standard formats
+2. Missing postcodes
+3. Incorrect positioning
+
+### 3. Combined Validation Results
+#### Overall Success Rate
+- Total addresses: [Number]
+- Fully valid addresses: [Number]
+- Success rate: [Percentage]%
+
+#### Common Issues
+1. Missing components
+2. Format violations
+3. Position errors
+
+## Recommendations
+
+### 1. Data Quality Improvements
+- Implement automated validation for new addresses
+- Add data quality checks during address entry
+- Regular validation of existing addresses
+
+### 2. Process Improvements
+- Standardize address entry format
+- Implement validation at point of entry
+- Regular review of validation rules
+
+### 3. Manual Review Requirements
+- Review addresses with special postcodes
+- Verify addresses with non-standard house numbers
+- Check addresses with missing components
+
+## Appendix
+
+### A. Validation Rules
+1. House Number Rules
+   - Must be numeric
+   - Can include letters
+   - Must be at start of address
+
+2. Postcode Rules
+   - Must follow UK format
+   - Must be present
+   - Must be in correct position
+
+### B. Transformation Log Details
+- Log table structure
+- Key fields tracked
+- Error handling
+
+### C. Sample Data
+- Examples of valid addresses
+- Examples of invalid addresses
+- Common error patterns
+
+## Next Steps
+1. Review findings with stakeholders
+2. Implement recommended improvements
+3. Schedule follow-up validation
+4. Update documentation as needed 
