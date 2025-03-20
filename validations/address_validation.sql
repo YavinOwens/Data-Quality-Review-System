@@ -89,7 +89,7 @@ BEGIN
            country,
            primary_flag,
            SYSDATE as dq_copy
-       FROM hr.per_addresses
+       FROM per_addresses
        WHERE country = 'GB';
 
    DBMS_OUTPUT.PUT_LINE('Table per_addresses_clean created successfully with ' ||

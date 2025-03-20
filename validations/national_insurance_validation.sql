@@ -75,7 +75,7 @@ BEGIN
            ''PENDING'' as nino_validation_status,
            NULL as nino_validation_message,
            SYSDATE as dq_copy
-       FROM hr.per_all_people_f
+       FROM per_all_people_f
        WHERE national_identifier IS NOT NULL
        AND LENGTH(TRIM(national_identifier)) > 0';
 

@@ -77,7 +77,7 @@ BEGIN
            NULL as dob_validation_message,
            NULL as adjusted_date_of_birth,
            SYSDATE as dq_copy
-       FROM hr.per_all_people_f';
+       FROM per_all_people_f';
 
    DBMS_OUTPUT.PUT_LINE('Table per_dob_clean created successfully with ' ||
        TO_CHAR((SELECT COUNT(*) FROM per_dob_clean)) || ' records.');

@@ -83,7 +83,7 @@ BEGIN
            date_from,
            date_to,
            SYSDATE as dq_copy
-       FROM hr.per_email_addresses';
+       FROM per_email_addresses';
 
    DBMS_OUTPUT.PUT_LINE('Table per_email_addresses_clean created successfully with ' ||
        TO_CHAR((SELECT COUNT(*) FROM per_email_addresses_clean)) || ' records.');
