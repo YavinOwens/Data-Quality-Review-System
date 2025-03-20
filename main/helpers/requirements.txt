@@ -1,0 +1,8 @@
+pandas>=2.0.0
+psycopg2-binary>=2.9.0
+SQLAlchemy>=2.0.0
+jupyter>=1.0.0
+ipykernel>=6.0.0
+notebook>=7.0.0
+matplotlib>=3.0.0
+ipynb-py-convert>=0.4.0 
