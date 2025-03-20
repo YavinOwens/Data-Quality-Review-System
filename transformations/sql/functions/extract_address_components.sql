@@ -1,3 +1,5 @@
+-- Test comment for Git tracking
+
 -- Function to extract main building number from address line 1
 CREATE OR REPLACE FUNCTION extract_main_building_number(
     p_address_line IN VARCHAR2
