@@ -1,0 +1,8 @@
+docker enables the development of solutions on various databases, 
+
+This example uses oracle 19c, this repository also contains the source to also include 
+oracle version 11,12,13,19 and 23 -e 
+
+requirements of docker are required further information can be found in the README.md file 
+
+for troubleshooting please reffer to the Docker Cheat sheet for the setup of oracle docker images 
