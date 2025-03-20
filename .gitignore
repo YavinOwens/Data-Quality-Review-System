@@ -15,9 +15,6 @@ docker/
 .mcp-config/
 mcp-servers/
 cursor-mcp-installer/
-.mcp-cache/
-.mcp-logs/
-mcp-*.log
 
 # Node.js / npm
 node_modules/
