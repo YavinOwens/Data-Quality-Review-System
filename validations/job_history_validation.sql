@@ -89,7 +89,7 @@ BEGIN
            supervisor_id,
            assignment_status_type_id,
            SYSDATE as dq_copy
-       FROM hr.per_all_assignments_f';
+       FROM per_all_assignments_f';
 
    DBMS_OUTPUT.PUT_LINE('Table per_assignments_clean created successfully with ' ||
        TO_CHAR((SELECT COUNT(*) FROM per_assignments_clean)) || ' records.');
@@ -153,7 +153,7 @@ BEGIN
                job_id,
                job_title as original_title,
                job_title as standard_title
-           FROM hr.per_jobs';
+           FROM per_jobs';
    EXCEPTION
        WHEN OTHERS THEN
            IF SQLCODE != -955 THEN  -- Table already exists

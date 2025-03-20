@@ -86,7 +86,7 @@ BEGIN
            NVL(known_as, '''') as known_as,
            NVL(preferred_name, '''') as preferred_name,
            SYSDATE as dq_copy
-       FROM hr.per_all_people_f';
+       FROM per_all_people_f';
 
    DBMS_OUTPUT.PUT_LINE('Table per_names_clean created successfully with ' ||
        TO_CHAR((SELECT COUNT(*) FROM per_names_clean)) || ' records.');
