@@ -1,158 +1,94 @@
-# Python Data Engineering and HR Core Validation
+# HR Analytics and Data Validation Project
 
-A comprehensive Python environment for data engineering workflows and HR Core data validation, featuring automated package management, data validation, database connectivity, and comprehensive data quality checks.
-
-## Key Features
-
-### Environment and Package Management
-- **Offline Package Management**: Downloads and manages Python wheels for offline installation
-- **Environment Isolation**: Creates dedicated virtual environments for project isolation
-- **Automated Setup**: Scripts for environment creation and package installation
-
-### Data Processing and Validation
-- **Data Validation**: Multiple validation frameworks:
-  - Great Expectations for robust data quality checks
-  - Pandera schemas for structured data validation
-- **High-Performance Processing**:
-  - Polars for high-performance data operations
-  - RapidFuzz for efficient fuzzy string matching
-- **Data Profiling**: Comprehensive profiling with ydata-profiling
-- **Visualization**: Interactive visualization with Plotly
-
-### Database and Connectivity
-- **Database Support**: 
-  - Oracle DB connections via cx_Oracle
-  - PostgreSQL support via psycopg2
-  - SQLAlchemy for ORM functionality
-- **Security**: Environment variable based credential management
+This project combines HR data analytics capabilities with comprehensive data validation using both Python and PL/SQL.
 
 ## Project Structure
 
 ```
-Python_offline/
-├── _DE_Wheels/              # Downloaded Python wheels for offline installation
-├── hr_core_validation/      # HR Core validation framework
-│   ├── data_sources/        # Source CSV files
-│   ├── documentation/       # Generated reports and diagrams
-│   ├── schemas/            # Data validation schemas
-│   ├── utils/             # Utility functions
-│   └── tests/             # Test suites
-├── scripts/                # Setup and verification scripts
-└── venv/                  # Virtual environment
+hr_analytics_with_validations/
+├── notebooks/              # Jupyter notebooks for HR data analysis
+│   └── hr_analytics/      # HR analytics notebooks
+├── scripts/               # Utility scripts
+│   ├── notebook_converter.py  # Convert between Python and Jupyter notebooks
+│   └── validation_runner.py   # Run PL-SQL validations
+└── validations/           # PL-SQL validation scripts
+    ├── address_validation.sql
+    ├── data_quality_review.sql
+    ├── date_of_birth_validation.sql
+    ├── email_validation.sql
+    ├── job_history_validation.sql
+    ├── name_field_validation.sql
+    ├── national_insurance_validation.sql
+    └── validations.sql
 ```
 
-## Security Considerations
+## Setup Instructions
 
-- All downloaded wheels are stored in `_DE_Wheels/` directory
-- Virtual environments are isolated from system Python
-- No sensitive credentials are stored in scripts
-- Database connections use environment variables for credentials
-- `.gitignore` configured to exclude sensitive files
-
-## Quick Start Guide
-
-1. **Initial Setup**:
-   ```bash
-   # Clone the repository
-   git clone https://github.com/yourusername/Python_offline.git
-   cd Python_offline
-   
-   # Run the setup script
-   python3 setup_data_engineering_env.py
-   ```
-
-2. **Environment Activation**:
-   ```bash
-   source venv/bin/activate  # On Unix/macOS
-   .\venv\Scripts\activate   # On Windows
-   ```
-
-3. **Package Installation**:
+1. Ensure you have Python 3.8+ installed
+2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-
-4. **Verify Installation**:
+3. Copy `.env.example` to `.env` and update the connection parameters:
    ```bash
-   python3 verify_packages.py
+   cp .env.example .env
+   ```
+4. Make sure the Oracle Docker container is running with the HR schema
+5. Start Jupyter Notebook:
+   ```bash
+   jupyter notebook
    ```
 
-## HR Core Data Validation
+## Features
 
-### Validation Rules
+### HR Analytics
+- Interactive data analysis using Jupyter notebooks
+- Oracle database connection and data extraction
+- Data visualization with matplotlib and seaborn
+- Statistical analysis capabilities
 
-#### Workers
-- Unique ID validation
-- Required fields: First Name, Last Name
-- Date format validation
-- Nationality code length check
+### Data Validation
+- Comprehensive PL-SQL validation scripts
+- Data quality checks
+- Field-level validations
+- Cross-table relationship validations
 
-#### Addresses
-- Unique ID validation
-- Required fields: Worker ID, Address Type
-- Address Type enumeration
-- Postal code format validation
+## Notebook Conversion Utility
 
-#### Communications
-- Unique ID validation
-- Required fields: Worker ID, Contact Type, Contact Value
-- Contact Type enumeration
-- Date format validation
+The project includes a utility script for converting between Python files and Jupyter notebooks:
 
-### Output
-- Validation summary reports (HTML)
-- Data profile reports
-- Entity-Relationship diagrams
-- Success rate visualizations
-- Table-level quality analysis
+### Converting Python to Notebook
+```bash
+python scripts/notebook_converter.py py2nb <python_file> [output_dir]
+```
 
-## Best Practices
+### Converting Notebook to Python
+```bash
+python scripts/notebook_converter.py nb2py <notebook_file> [output_dir]
+```
 
-1. **Virtual Environment Management**:
-   - Use provided virtual environment
-   - Don't mix with system Python
-   - Recreate environment if issues arise
+## Running Validations
 
-2. **Package Management**:
-   - Maintain offline wheels in `_DE_Wheels/`
-   - Keep `requirements.txt` updated
-   - Version lock dependencies
-
-3. **Security**:
-   - Use environment variables for credentials
-   - Don't commit sensitive data
-   - Regular security updates
-
-## Troubleshooting
-
-1. **Virtual Environment Issues**:
-   ```bash
-   # Remove existing environment
-   rm -rf venv/  # Unix/macOS
-   rmdir /s /q venv  # Windows
-   
-   # Recreate environment
-   python3 setup_data_engineering_env.py
+1. Connect to the Oracle database
+2. Execute validation scripts in the following order:
+   ```sql
+   @validations/validations.sql
+   @validations/data_quality_review.sql
    ```
 
-2. **Package Installation Failures**:
-   - Check `_DE_Wheels/` directory
-   - Verify Python version compatibility
-   - Check dependency availability
+## Dependencies
 
-3. **Database Connection Issues**:
-   - Verify environment variables
-   - Check network connectivity
-   - Validate credentials
+- Jupyter Notebook
+- cx_Oracle for Oracle database connection
+- pandas for data manipulation
+- matplotlib and seaborn for visualization
+- python-dotenv for environment variable management
+- ipynb-py-convert for notebook conversion
 
-## Contributing
+## Notes
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Make sure the Oracle Docker container is running before executing the notebooks or validations
+- The HR schema must be properly set up in the Oracle database
+- Keep your `.env` file secure and never commit it to version control
+- Use the notebook conversion utility if you need to convert between Python files and Jupyter notebooks
+- Run validations regularly to ensure data quality
