@@ -9,7 +9,7 @@ This script automates the setup of a data engineering environment by:
 
 Note: For packages that require compilation from source, an initial internet connection
 is required during the first installation to download build dependencies and resources.
-Subsequent installations in other offline environments will work without internet
+Subsequent installations in other environments will work without internet
 if all dependencies are properly downloaded.
 
 Usage:
@@ -71,30 +71,60 @@ def create_wheels_directory():
 def download_packages():
     """
     Download specified data engineering packages and their dependencies.
-
-    Downloads both wheel files and source distributions for the following packages:
-    - pip: Package installer for Python (latest version)
-    - great-expectations: Data validation and testing framework
-    - rapidfuzz: Fast string matching library
-    - polars: Fast DataFrame library
-    - pandas: Data manipulation and analysis library
-    - numpy: Numerical computing library
-    - sqlalchemy: SQL toolkit and ORM
-
-    Note:
-        Some packages may require compilation from source. In such cases,
-        an initial internet connection is required during the first installation
-        to download build dependencies and resources.
+    
+    Categories:
+    - Testing and Development
+    - Database Connectivity
+    - Data Processing and Analysis
+    - Data Validation and Quality
+    - Visualization and Documentation
+    - Jupyter Environment
+    - Additional Dependencies
     """
-    packages = [
-        "pip",  # Include pip itself
-        "great-expectations",
-        "rapidfuzz",
-        "polars",
-        "pandas",
-        "numpy",
-        "sqlalchemy"
-    ]
+    packages = {
+        "Testing and Development": [
+            "pytest==8.3.5",
+            "mypy==1.15.0",
+            "pylint==3.3.6",
+            "black==25.1.0",
+            "rope==1.13.0"
+        ],
+        "Database Connectivity": [
+            "psycopg2-binary==2.9.10",
+            "SQLAlchemy==2.0.39"
+        ],
+        "Data Processing and Analysis": [
+            "numpy==2.2.4",
+            "pandas==2.2.3",
+            "polars==1.25.2",
+            "python-dateutil==2.9.0.post0",
+            "pytz==2025.1"
+        ],
+        "Data Validation and Quality": [
+            "pydantic==2.10.6",
+            "pydantic-core==2.27.2"
+        ],
+        "Visualization and Documentation": [
+            "matplotlib==3.10.1",
+            "seaborn==0.13.2",
+            "Jinja2==3.1.6",
+            "Pillow==11.1.0"
+        ],
+        "Jupyter Environment": [
+            "jupyter==1.1.1",
+            "notebook==7.3.3",
+            "ipynb-py-convert==0.4.6",
+            "ipython==9.0.2",
+            "jupyterlab==4.3.6"
+        ],
+        "Additional Dependencies": [
+            "python-dotenv==1.0.1",
+            "PyYAML==6.0.2",
+            "requests==2.32.3",
+            "typing_extensions==4.12.2",
+            "toml==0.10.2"
+        ]
+    }
     
     wheels_dir = create_wheels_directory()
     
@@ -102,18 +132,26 @@ def download_packages():
     print("An initial internet connection will be needed during the first installation")
     print("to download build dependencies and resources.\n")
     
+    # Flatten package list
+    all_packages = [pkg for category in packages.values() for pkg in category]
+    
     # First, download all packages and their dependencies
     print("Downloading all packages and dependencies...")
-    subprocess.run([
-        "pip", "download",
-        "--dest", str(wheels_dir),
-        *packages
-    ], check=True)
+    for category, pkgs in packages.items():
+        print(f"\nDownloading {category} packages...")
+        for package in pkgs:
+            print(f"  - {package}")
+            subprocess.run([
+                "pip", "download",
+                "--dest", str(wheels_dir),
+                package
+            ], check=True)
     
     # Then, download specific platform wheels for Python 3.10
     print("\nDownloading Python 3.10 specific wheels...")
-    for package in packages:
-        print(f"Downloading Python 3.10 wheels for {package}...")
+    for package in all_packages:
+        pkg_name = package.split('==')[0]
+        print(f"Downloading Python 3.10 wheels for {pkg_name}...")
         try:
             subprocess.run([
                 "pip", "download",
@@ -123,7 +161,7 @@ def download_packages():
                 package
             ], check=True)
         except subprocess.CalledProcessError:
-            print(f"Note: Could not find specific Python 3.10 wheel for {package}, using previously downloaded version")
+            print(f"Note: Could not find specific Python 3.10 wheel for {pkg_name}, using previously downloaded version")
 
 def main():
     """
