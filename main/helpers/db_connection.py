@@ -5,7 +5,7 @@ Provides easy-to-use functions for connecting to and querying the database.
 
 import os
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from typing import Optional, Dict, Any
 import psycopg2
 from contextlib import contextmanager
@@ -35,6 +35,7 @@ class DatabaseConnection:
         self.user = user
         self.password = password
         self._engine = None
+        self._connection = None
 
     @property
     def connection_string(self) -> str:
@@ -95,6 +96,31 @@ class DatabaseConnection:
         except Exception as e:
             print(f"Query failed: {str(e)}")
             return pd.DataFrame()
+
+    def execute(self, query: str, params: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Execute a SQL query without returning results.
+        
+        Args:
+            query (str): SQL query to execute
+            params (dict, optional): Query parameters
+        """
+        try:
+            with self.engine.connect() as connection:
+                connection.execute(text(query), params or {})
+                connection.commit()
+        except Exception as e:
+            print(f"Query execution failed: {str(e)}")
+            raise
+
+    def close(self) -> None:
+        """Close the database connection."""
+        if self._engine:
+            self._engine.dispose()
+            self._engine = None
+        if self._connection:
+            self._connection.close()
+            self._connection = None
 
 # Create a default connection instance
 default_connection = DatabaseConnection()
