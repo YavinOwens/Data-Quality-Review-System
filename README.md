@@ -130,7 +130,7 @@ This repository contains two main components:
 1. **PL/SQL Validation Scripts** - A suite of PL/SQL scripts for validating and standardizing Oracle HR table data
 2. **HR Table Schema Scraper** - A Python tool for scraping Oracle HR table definitions and generating CSV documentation
 
-![Homepage Screenshot](resource/homepage.png)
+![Homepage Screenshot](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/homepage.png)
 
 ## PL/SQL Validation Scripts
 
@@ -248,24 +248,22 @@ EXEC validate_uk_postcodes;
 ## Application Screenshots
 
 ### Homepage
-
-![Homepage](resource/homepage.png)
+![Homepage](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/homepage.png)
 
 ### Table Schemas Page
-
-![Schemas Page](resource/schemas.png)
+![Schemas Page](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/schemas.png)
 
 ### Table Detail View
-
-![Table Detail](resource/table_detail.png)
+![Table Detail](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/text_info_detail.png)
 
 ### ERD Diagrams Page
-
-![ERD Diagrams](resource/erds.png)
+![ERD Diagrams](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/search_results.png)
 
 ### Text Information View
+![Text Information](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/text_info.png)
 
-![Text Information](resource/text_info.png)
+### Mobile View
+![Mobile View](https://raw.githubusercontent.com/YavinOwens/Python_offline/HrTableSchema/resource/mobile_view.png)
 
 ## Features
 
