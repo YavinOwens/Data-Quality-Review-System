@@ -20,6 +20,7 @@ from helpers.sql_queries import (
     execute_query
 )
 from helpers.schema_visualizer import generate_erd_dot, generate_erd_image
+from helpers.schema_page_updater import update_schema_page, get_schema_section
 
 # Define what should be available when using 'from helpers import *'
 __all__ = [
@@ -30,7 +31,9 @@ __all__ = [
     'get_sample_data',
     'execute_query',
     'generate_erd_dot',
-    'generate_erd_image'
+    'generate_erd_image',
+    'update_schema_page',
+    'get_schema_section'
 ]
 
 
