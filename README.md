@@ -109,14 +109,39 @@ PySpark requires Java to be installed and properly configured. Follow these step
    findspark.init()
    from pyspark.sql import SparkSession
    
-   # Create a Spark session
-   spark = SparkSession.builder.appName('test').getOrCreate()
+   # Create a Spark session with proper configuration
+   spark = SparkSession.builder \
+       .appName("test") \
+       .config("spark.sql.repl.eagerEval.enabled", True) \
+       .config("spark.sql.repl.eagerEval.maxNumRows", 10) \
+       .config("spark.sql.repl.eagerEval.truncate", 0) \
+       .getOrCreate()
    ```
+
+### PySpark Configuration Tips
+
+When configuring PySpark, pay attention to the data types of configuration values:
+
+1. **Truncate Settings**: 
+   - Use integer values (0 or positive numbers) for `spark.sql.repl.eagerEval.truncate`
+   - 0 means no truncation
+   - Positive numbers specify the maximum length of strings
+
+2. **Common Configuration Properties**:
+   - Boolean values: `spark.sql.repl.eagerEval.enabled`
+   - Integer values: `spark.sql.repl.eagerEval.maxNumRows`, `spark.sql.repl.eagerEval.truncate`
+   - String values: Most other configuration properties
+
+3. **Best Practices**:
+   - Always verify the expected data type for each configuration property
+   - Use appropriate Python data types (True/False for booleans, integers for numeric values)
+   - Consider setting log level to "WARN" to reduce noise: `spark.sparkContext.setLogLevel("WARN")`
 
 Common Issues and Solutions:
 - If you see "Unable to locate a Java Runtime" error, make sure you've completed steps 1-4
 - If you see warnings about hostname resolving to loopback address, this is normal for local development
 - If you see warnings about native-hadoop library, this doesn't affect functionality for local development
+- If you get `IllegalArgumentException` about configuration values, check the data type of the value you're setting
 
 ## Database Connection Setup
 
