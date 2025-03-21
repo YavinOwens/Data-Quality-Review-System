@@ -64,6 +64,65 @@ Python_offline/
    jupyter notebook
    ```
 
+## Database Connection Setup
+
+### Using pgAdmin 4
+
+To connect to the PostgreSQL database using pgAdmin 4, follow these steps:
+
+1. Open pgAdmin 4
+2. Right-click on "Servers" in the left panel and select "Register" → "Server"
+3. In the "Register - Server" dialog, fill in the following fields:
+
+   **General Tab:**
+   - Host name/address: [Your database host]
+   - Port: 5432 (default PostgreSQL port)
+   - Maintenance database: postgres
+   - Username: postgres
+   - Password: [Your database password]
+
+   **Optional Settings:**
+   - Save password?: Toggle if you want to save the password
+   - Role: [Optional - specify if you have a specific role]
+   - Service: [Optional - specify if using a service name]
+
+4. Click "Save" to establish the connection
+
+### Connection String Format
+
+For Python applications, the connection string format is:
+```python
+postgresql://username:password@hostname:5432/database_name
+```
+
+### Environment Variables
+
+Create a `.env` file in your project root with the following variables:
+```bash
+DB_HOST=your_host
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=postgres
+DB_PASSWORD=your_password
+```
+
+### Testing the Connection
+
+You can test your database connection using the provided verification script:
+```bash
+python verify_packages.py
+```
+
+This will attempt to connect to the database and run some basic queries to ensure everything is set up correctly.
+
+### Troubleshooting
+
+Common connection issues and solutions:
+1. **"Name cannot be empty" error**: Ensure you've provided a name for the server in pgAdmin's General tab
+2. **Connection refused**: Verify the host and port are correct
+3. **Authentication failed**: Check your username and password
+4. **Database does not exist**: Confirm the maintenance database name is correct
+
 ## Use Cases
 
 ### SaaS Development
