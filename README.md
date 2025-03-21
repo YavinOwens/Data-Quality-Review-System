@@ -66,44 +66,45 @@ Python_offline/
 
 ## Database Connection Setup
 
-### Using pgAdmin 4
+### Using pgAdmin 4 with Docker Container
 
-To connect to the PostgreSQL database using pgAdmin 4, follow these steps:
+To connect to the PostgreSQL database in our Docker container using pgAdmin 4, use these specific credentials:
 
 1. Open pgAdmin 4
 2. Right-click on "Servers" in the left panel and select "Register" → "Server"
 3. In the "Register - Server" dialog, fill in the following fields:
 
    **General Tab:**
-   - Host name/address: [Your database host]
-   - Port: 5432 (default PostgreSQL port)
+   - Name: HR_Analytics_DB (or any descriptive name)
+   - Host name/address: localhost
+   - Port: 5432
    - Maintenance database: postgres
    - Username: postgres
-   - Password: [Your database password]
+   - Password: postgres
 
    **Optional Settings:**
-   - Save password?: Toggle if you want to save the password
-   - Role: [Optional - specify if you have a specific role]
-   - Service: [Optional - specify if using a service name]
+   - Save password?: Yes (recommended for development)
+   - Role: Leave empty
+   - Service: Leave empty
 
 4. Click "Save" to establish the connection
 
 ### Connection String Format
 
-For Python applications, the connection string format is:
+For Python applications using our Docker setup:
 ```python
-postgresql://username:password@hostname:5432/database_name
+postgresql://postgres:postgres@localhost:5432/postgres
 ```
 
 ### Environment Variables
 
-Create a `.env` file in your project root with the following variables:
+Create a `.env` file in your project root with these specific values:
 ```bash
-DB_HOST=your_host
+DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=postgres
 DB_USER=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=postgres
 ```
 
 ### Testing the Connection
@@ -115,13 +116,30 @@ python verify_packages.py
 
 This will attempt to connect to the database and run some basic queries to ensure everything is set up correctly.
 
+### Docker Container Access
+
+If you're running the database in Docker, ensure:
+1. The Docker container is running:
+   ```bash
+   docker ps | grep postgres
+   ```
+2. Port 5432 is properly mapped:
+   ```bash
+   docker port postgres-container
+   ```
+
 ### Troubleshooting
 
 Common connection issues and solutions:
 1. **"Name cannot be empty" error**: Ensure you've provided a name for the server in pgAdmin's General tab
-2. **Connection refused**: Verify the host and port are correct
-3. **Authentication failed**: Check your username and password
-4. **Database does not exist**: Confirm the maintenance database name is correct
+2. **Connection refused**: 
+   - Verify Docker container is running
+   - Check port mapping with `docker port postgres-container`
+   - Ensure no other service is using port 5432
+3. **Authentication failed**: Verify you're using:
+   - Username: postgres
+   - Password: postgres
+4. **Database does not exist**: The default database name should be 'postgres'
 
 ## Use Cases
 
