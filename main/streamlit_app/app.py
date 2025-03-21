@@ -4,7 +4,15 @@ from sqlalchemy import create_engine, text
 from streamlit_option_menu import option_menu
 from streamlit_elements import elements, dashboard, mui, html, nivo
 import os
-import graphviz
+import sys
+from subprocess import run, PIPE
+
+# Try importing graphviz and handle potential import errors
+try:
+    import graphviz
+    GRAPHVIZ_AVAILABLE = True
+except ImportError:
+    GRAPHVIZ_AVAILABLE = False
 
 # Set page configuration to wide mode
 st.set_page_config(layout="wide")
@@ -83,6 +91,15 @@ def get_column_stats(engine, table_name, column_name):
     with engine.connect() as conn:
         return pd.read_sql(query, conn)
 
+def check_graphviz_installation():
+    """Check if Graphviz is properly installed in the system."""
+    try:
+        # Try running dot -V to check if Graphviz is installed
+        result = run(['dot', '-V'], stdout=PIPE, stderr=PIPE, text=True)
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
+
 # Function to generate ERD diagram
 def generate_erd(engine, output_dir="static/images"):
     """
@@ -96,6 +113,36 @@ def generate_erd(engine, output_dir="static/images"):
         str: Path to the generated PNG file
     """
     try:
+        # Check if Python graphviz package is available
+        if not GRAPHVIZ_AVAILABLE:
+            st.error("""
+                Python graphviz package is not installed. Please install it using:
+                ```
+                pip install python-graphviz
+                ```
+            """)
+            return None
+            
+        # Check if system Graphviz is installed
+        if not check_graphviz_installation():
+            st.error("""
+                System-level Graphviz is not installed. Please install it using:
+                
+                For macOS:
+                ```
+                brew install graphviz
+                ```
+                
+                For Ubuntu/Debian:
+                ```
+                sudo apt-get install graphviz
+                ```
+                
+                For Windows:
+                Download from https://graphviz.org/download/
+            """)
+            return None
+            
         # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
         
@@ -139,11 +186,17 @@ def generate_erd(engine, output_dir="static/images"):
                 _attributes={'arrowhead': 'crow', 'arrowtail': 'none'}
             )
         
-        # Save the graph
-        output_path = os.path.join(output_dir, "schema_erd")
-        dot.render(output_path, format='png', cleanup=True)
-        
-        return output_path + '.png'
+        try:
+            # Save the graph
+            output_path = os.path.join(output_dir, "schema_erd")
+            dot.render(output_path, format='png', cleanup=True)
+            return output_path + '.png'
+        except graphviz.ExecutableNotFound:
+            st.error("""
+                Graphviz executable not found in PATH. Please ensure Graphviz is properly installed 
+                and the 'dot' executable is in your system PATH.
+            """)
+            return None
         
     except Exception as e:
         st.error(f"Error generating ERD: {str(e)}")
