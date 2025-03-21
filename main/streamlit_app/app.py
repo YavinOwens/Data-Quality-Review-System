@@ -443,6 +443,14 @@ try:
                         with mui.Card(key="erd_diagram", sx={"height": "100%"}):
                             mui.CardHeader(title="Entity-Relationship Diagram")
                             with mui.CardContent():
+                                # Add description and instructions
+                                st.markdown("""
+                                This diagram shows the relationships between tables in your database.
+                                - Tables are shown as boxes with their columns
+                                - Arrows indicate foreign key relationships
+                                - The crow's foot (→) indicates a many-to-one relationship
+                                """)
+                                
                                 # Generate ERD button
                                 if st.button("Generate ERD"):
                                     with st.spinner("Generating ERD diagram..."):
