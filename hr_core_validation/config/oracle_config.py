@@ -61,7 +61,7 @@ HR_CORE_TABLES = {
             'EFFECTIVE_END_DATE',
             'ADDRESS_TYPE',
             'ADDRESS_LINE1',
-            'CITY',
+            'TOWN_OR_CITY',
             'POSTAL_CODE',
             'COUNTRY'
         ]
@@ -91,7 +91,7 @@ VALIDATION_RULES = {
                 'date_format': 'YYYY-MM-DD',
                 'valid_range': {
                     'min': '1900-01-01',
-                    'max': '2100-12-31'
+                    'max': '4712-12-31'
                 }
             },
             'EFFECTIVE_END_DATE': {
@@ -99,7 +99,7 @@ VALIDATION_RULES = {
                 'date_format': 'YYYY-MM-DD',
                 'valid_range': {
                     'min': '1900-01-01',
-                    'max': '2100-12-31'
+                    'max': '4712-12-31'
                 }
             },
             'DATE_OF_BIRTH': {
@@ -107,7 +107,7 @@ VALIDATION_RULES = {
                 'date_format': 'YYYY-MM-DD',
                 'valid_range': {
                     'min': '1900-01-01',
-                    'max': '2100-12-31'
+                    'max': '4712-12-31'
                 }
             }
         },

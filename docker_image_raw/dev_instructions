@@ -1,0 +1,15 @@
+Docker enables the development of solutions on various databases.
+
+This example uses Oracle 19c. This repository also contains instructions for Oracle versions 11, 12, 13, 19, and 23-e.
+
+Requirements:
+1. Docker installation is required (see README.md for more details)
+2. Download the Oracle Database 19c (19.1.0.0.0) for Linux ARM64 from the official Oracle website:
+   - Visit: https://www.oracle.com/database/technologies/oracle19c-linux-arm64-downloads.html
+   - Download: LINUX.ARM64_1919000_db_home.zip (approximately 2GB)
+   - Place the downloaded ZIP file in the docker_image_raw directory
+
+For troubleshooting, please refer to the Docker Cheat Sheet for the setup of Oracle docker images.
+
+Note: The LINUX.ARM64_1919000_db_home.zip file is not included in this repository due to its large size (2GB).
+You must download it separately from the Oracle website.

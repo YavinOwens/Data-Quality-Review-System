@@ -32,3 +32,13 @@ rapidfuzz>=3.12.2
 
 # Package Management
 pip>=25.0.1
+
+# Jupyter Notebook
+jupyter>=1.0.0
+notebook>=7.0.0
+ipynb-py-convert>=0.5.1
+
+# Additional dependencies
+matplotlib>=3.7.0
+seaborn>=0.12.0
+python-dotenv>=1.0.0
