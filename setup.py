@@ -1,51 +1,46 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="hr_core_validation",
-    version="0.1",
+    name="python_offline",
+    version="0.1.0",
     packages=find_packages(),
     install_requires=[
-        # Testing and Development
-        "pytest>=8.3.5",
-        "mypy>=1.15.0",
-        "pylint>=3.3.6",
-        "black>=25.1.0",
-        "rope>=1.13.0",
-
-        # Database Connectivity
         "psycopg2-binary>=2.9.10",
         "SQLAlchemy>=2.0.39",
-
-        # Data Processing and Analysis
-        "numpy>=2.2.4",
-        "pandas>=2.2.3",
-        "polars>=1.25.2",
-        "python-dateutil>=2.9.0.post0",
-        "pytz>=2025.1",
-
-        # Data Validation and Quality
-        "pydantic>=2.10.6",
-        "pydantic-core>=2.27.2",
-
-        # Visualization and Documentation
-        "matplotlib>=3.10.1",
+        "pandas>=2.2.0",
+        "numpy>=1.26.4",
+        "polars>=0.20.7",
+        "pyspark>=3.5.1",
+        "pyarrow>=14.0.1",
+        "findspark>=2.0.1",
+        "pandera>=0.18.0",
+        "great-expectations>=0.18.9",
+        "matplotlib>=3.8.3",
         "seaborn>=0.13.2",
-        "Jinja2>=3.1.6",
-        "Pillow>=11.1.0",
-
-        # Jupyter Environment
-        "jupyter>=1.1.1",
-        "notebook>=7.3.3",
-        "ipynb-py-convert>=0.4.6",
-        "ipython>=9.0.2",
-        "jupyterlab>=4.3.6",
-
-        # Additional Dependencies
-        "python-dotenv>=1.0.1",
-        "PyYAML>=6.0.2",
-        "requests>=2.32.3",
-        "typing_extensions>=4.12.2",
-        "toml>=0.10.2"
+        "plotly>=5.18.0",
+        "python-Levenshtein>=0.23.0",
+        "pip-tools>=7.4.0",
+        "jupyter>=1.0.0",
+        "notebook>=7.0.7",
+        "ipykernel>=6.29.0",
+        "nbformat>=5.9.2",
+        "nbconvert>=7.16.0",
+        "tqdm>=4.66.2",
+        "scikit-learn>=1.4.0"
+    ],
+    author="Yavin Owens",
+    author_email="your.email@example.com",
+    description="A package for data engineering and analytics with validation",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/YavinOwens/Python_offline",
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     python_requires=">=3.10",
 ) 
