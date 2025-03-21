@@ -26,7 +26,8 @@ setup(
         "nbformat>=5.9.2",
         "nbconvert>=7.16.0",
         "tqdm>=4.66.2",
-        "scikit-learn>=1.4.0"
+        "scikit-learn>=1.4.0",
+        "graphviz>=0.20.1"
     ],
     author="Yavin Owens",
     author_email="your.email@example.com",
