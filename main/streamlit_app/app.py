@@ -426,39 +426,46 @@ try:
                 st.write(f'Total rows: {len(data)}')
                 
             elif selected == "Schema":
-                # Schema layout with ERD
-                with elements("schema"):
-                    layout = [
-                        dashboard.Item("table_schema", 0, 0, 6, 6),
-                        dashboard.Item("erd_diagram", 6, 0, 6, 6),
-                    ]
-                    
-                    with dashboard.Grid(layout):
-                        with mui.Card(key="table_schema", sx={"height": "100%"}):
-                            mui.CardHeader(title="Table Schema")
-                            with mui.CardContent():
-                                schema = get_table_schema(engine, selected_table)
-                                st.dataframe(schema, use_container_width=True)
+                # Schema section with ERD and table details
+                st.subheader("Database Schema")
+                
+                # Add description and instructions
+                st.markdown("""
+                This section shows the complete database schema and relationships between tables.
+                - Tables are shown as boxes with their columns
+                - Arrows indicate foreign key relationships
+                - The crow's foot (→) indicates a many-to-one relationship
+                """)
+                
+                # Create two columns for layout
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    st.subheader("Entity-Relationship Diagram")
+                    # Generate ERD button
+                    if st.button("Generate ERD"):
+                        with st.spinner("Generating ERD diagram..."):
+                            erd_path = generate_erd(engine)
+                            if erd_path and os.path.exists(erd_path):
+                                st.image(erd_path, use_container_width=True)
+                            else:
+                                st.error("Failed to generate ERD diagram")
+                
+                with col2:
+                    st.subheader("Table Details")
+                    # Show schema for selected table
+                    if selected_table:
+                        schema = get_table_schema(engine, selected_table)
+                        st.markdown(f"**Schema for table: {selected_table}**")
+                        st.dataframe(schema, use_container_width=True)
                         
-                        with mui.Card(key="erd_diagram", sx={"height": "100%"}):
-                            mui.CardHeader(title="Entity-Relationship Diagram")
-                            with mui.CardContent():
-                                # Add description and instructions
-                                st.markdown("""
-                                This diagram shows the relationships between tables in your database.
-                                - Tables are shown as boxes with their columns
-                                - Arrows indicate foreign key relationships
-                                - The crow's foot (→) indicates a many-to-one relationship
-                                """)
-                                
-                                # Generate ERD button
-                                if st.button("Generate ERD"):
-                                    with st.spinner("Generating ERD diagram..."):
-                                        erd_path = generate_erd(engine)
-                                        if erd_path and os.path.exists(erd_path):
-                                            st.image(erd_path, use_container_width=True)
-                                        else:
-                                            st.error("Failed to generate ERD diagram")
+                        # Show table statistics
+                        stats = get_table_stats(engine, selected_table)
+                        st.markdown("**Table Statistics:**")
+                        st.metric("Total Rows", stats['total_rows'].iloc[0])
+                        st.metric("Unique Rows", stats['unique_rows'].iloc[0])
+                    else:
+                        st.info("Select a table to view its schema details")
             
             elif selected == "Query":
                 # Custom query interface
