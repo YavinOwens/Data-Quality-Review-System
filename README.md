@@ -49,7 +49,9 @@ Python_offline/
 1. Create and activate a virtual environment:
    ```bash
    python -m venv .venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   source .venv/bin/activate  # On Unix/Mac
+   # OR
+   .\.venv\Scripts\activate  # On Windows
    ```
 
 2. Install dependencies:
@@ -63,6 +65,58 @@ Python_offline/
    ```bash
    jupyter notebook
    ```
+
+## PySpark Setup Requirements
+
+PySpark requires Java to be installed and properly configured. Follow these steps:
+
+1. Install OpenJDK 11 using Homebrew:
+   ```bash
+   brew install openjdk@11
+   ```
+
+2. Create a symbolic link to make Java accessible system-wide:
+   ```bash
+   sudo ln -sfn $(brew --prefix)/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+   ```
+
+3. Add Java environment variables to your shell configuration (~/.zshrc):
+   ```bash
+   # Java configuration
+   export JAVA_HOME=/opt/homebrew/Cellar/openjdk@11/11.0.26/libexec/openjdk.jdk/Contents/Home
+   export PATH=$JAVA_HOME/bin:$PATH
+   ```
+
+4. Reload your shell configuration:
+   ```bash
+   source ~/.zshrc
+   ```
+
+5. Verify Java installation:
+   ```bash
+   java -version
+   ```
+   You should see output similar to:
+   ```
+   openjdk version "11.0.26" 2025-01-21
+   OpenJDK Runtime Environment Homebrew (build 11.0.26+0)
+   OpenJDK 64-Bit Server VM Homebrew (build 11.0.26+0, mixed mode)
+   ```
+
+6. Test PySpark installation:
+   ```python
+   import findspark
+   findspark.init()
+   from pyspark.sql import SparkSession
+   
+   # Create a Spark session
+   spark = SparkSession.builder.appName('test').getOrCreate()
+   ```
+
+Common Issues and Solutions:
+- If you see "Unable to locate a Java Runtime" error, make sure you've completed steps 1-4
+- If you see warnings about hostname resolving to loopback address, this is normal for local development
+- If you see warnings about native-hadoop library, this doesn't affect functionality for local development
 
 ## Database Connection Setup
 
@@ -140,6 +194,79 @@ Common connection issues and solutions:
    - Username: postgres
    - Password: postgres
 4. **Database does not exist**: The default database name should be 'postgres'
+
+## Jupyter Kernel Setup and Troubleshooting
+
+If you're experiencing issues with Jupyter kernels not starting, follow these steps:
+
+1. First, ensure your virtual environment is properly activated:
+   ```bash
+   source .venv/bin/activate  # On Unix/Mac
+   # OR
+   .\.venv\Scripts\activate  # On Windows
+   ```
+
+2. Install/Reinstall IPython kernel:
+   ```bash
+   pip install --upgrade ipykernel
+   python -m ipykernel install --user --name=python_offline
+   ```
+
+3. Clear Jupyter cache and restart:
+   ```bash
+   # Remove cached kernel data
+   jupyter cache clear
+   jupyter kernelspec list  # List all available kernels
+   ```
+
+4. Verify all dependencies are installed:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. If issues persist, try rebuilding the environment:
+   ```bash
+   deactivate  # Exit current virtual environment
+   rm -rf .venv  # Remove existing environment
+   python -m venv .venv  # Create new environment
+   source .venv/bin/activate  # Activate new environment
+   pip install -r requirements.txt  # Reinstall dependencies
+   ```
+
+### Common Kernel Issues
+
+1. **"No module named X" errors**:
+   - Ensure you're using the correct kernel (python_offline)
+   - Verify all dependencies are installed
+   - Check if the virtual environment is activated
+
+2. **Kernel dies immediately**:
+   - Check system resources (memory/CPU usage)
+   - Look for conflicting package versions
+   - Review Jupyter logs for errors
+
+3. **Connection timeouts**:
+   - Increase kernel timeout settings in Jupyter config
+   - Check for firewall/antivirus interference
+   - Verify network connectivity
+
+4. **Memory issues**:
+   - Reduce the chunk size when loading data
+   - Use Polars or PySpark for large datasets
+   - Increase system swap space if needed
+
+### Verifying Installation
+
+Run the verification script to check all components:
+```bash
+python verify_packages.py
+```
+
+This will test:
+- Python environment setup
+- Package installations
+- Database connectivity
+- Jupyter kernel configuration
 
 ## Use Cases
 
