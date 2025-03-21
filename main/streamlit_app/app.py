@@ -448,7 +448,7 @@ try:
                                     with st.spinner("Generating ERD diagram..."):
                                         erd_path = generate_erd(engine)
                                         if erd_path and os.path.exists(erd_path):
-                                            st.image(erd_path, use_column_width=True)
+                                            st.image(erd_path, use_container_width=True)
                                         else:
                                             st.error("Failed to generate ERD diagram")
             
