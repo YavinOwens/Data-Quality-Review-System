@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from streamlit_option_menu import option_menu
 from streamlit_elements import elements, dashboard, mui, html, nivo
 import os
-from helpers.schema_visualizer import generate_erd_dot, generate_erd_image
+import graphviz
 
 # Set page configuration to wide mode
 st.set_page_config(layout="wide")
@@ -99,52 +99,52 @@ def generate_erd(engine, output_dir="static/images"):
         # Ensure output directory exists
         os.makedirs(output_dir, exist_ok=True)
         
-        # Generate DOT file
-        dot_file = os.path.join(output_dir, "schema_erd.dot")
-        with open(dot_file, 'w') as f:
-            f.write('digraph G {\n')
-            f.write('    rankdir=LR;\n')
-            f.write('    node [shape=record, style=filled, fillcolor=lightblue];\n')
-            f.write('    edge [arrowhead=crow, arrowtail=none];\n')
-            
-            # Add tables
-            tables = get_tables(engine)
-            for table in tables:
-                schema = get_table_schema(engine, table)
-                columns = [f"{row['column_name']} : {row['data_type']}" for _, row in schema.iterrows()]
-                table_label = f"{table}|{{'|'.join(columns)}}"
-                f.write(f'    "{table}" [label="{{{table_label}}}"];\n')
-            
-            # Add relationships
-            fk_query = """
-            SELECT
-                tc.table_name as source_table,
-                kcu.column_name as source_column,
-                ccu.table_name AS target_table,
-                ccu.column_name AS target_column
-            FROM information_schema.table_constraints tc
-            JOIN information_schema.key_column_usage kcu
-                ON tc.constraint_name = kcu.constraint_name
-            JOIN information_schema.constraint_column_usage ccu
-                ON ccu.constraint_name = tc.constraint_name
-            WHERE tc.constraint_type = 'FOREIGN KEY';
-            """
-            with engine.connect() as conn:
-                fk_results = pd.read_sql(fk_query, conn)
-            
-            for _, fk in fk_results.iterrows():
-                f.write(f'    "{fk["source_table"]}" -> "{fk["target_table"]}";\n')
-            
-            f.write('}\n')
+        # Create a new Graphviz graph
+        dot = graphviz.Digraph('erd')
+        dot.attr(rankdir='LR')
         
-        # Generate PNG file
-        png_file = dot_file.replace('.dot', '.png')
-        os.system(f'dot -Tpng {dot_file} -o {png_file}')
+        # Set default node attributes
+        dot.attr('node', shape='record', style='filled', fillcolor='lightblue')
         
-        # Clean up DOT file
-        os.remove(dot_file)
+        # Add tables
+        tables = get_tables(engine)
+        for table in tables:
+            schema = get_table_schema(engine, table)
+            columns = [f"{row['column_name']} : {row['data_type']}" for _, row in schema.iterrows()]
+            table_label = f"{table}|{{'|'.join(columns)}}"
+            dot.node(table, table_label)
         
-        return png_file
+        # Add relationships
+        fk_query = """
+        SELECT
+            tc.table_name as source_table,
+            kcu.column_name as source_column,
+            ccu.table_name AS target_table,
+            ccu.column_name AS target_column
+        FROM information_schema.table_constraints tc
+        JOIN information_schema.key_column_usage kcu
+            ON tc.constraint_name = kcu.constraint_name
+        JOIN information_schema.constraint_column_usage ccu
+            ON ccu.constraint_name = tc.constraint_name
+        WHERE tc.constraint_type = 'FOREIGN KEY';
+        """
+        with engine.connect() as conn:
+            fk_results = pd.read_sql(fk_query, conn)
+        
+        # Add edges for foreign key relationships
+        for _, fk in fk_results.iterrows():
+            dot.edge(
+                fk["source_table"],
+                fk["target_table"],
+                _attributes={'arrowhead': 'crow', 'arrowtail': 'none'}
+            )
+        
+        # Save the graph
+        output_path = os.path.join(output_dir, "schema_erd")
+        dot.render(output_path, format='png', cleanup=True)
+        
+        return output_path + '.png'
+        
     except Exception as e:
         st.error(f"Error generating ERD: {str(e)}")
         return None
