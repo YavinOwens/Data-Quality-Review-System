@@ -1,488 +1,605 @@
 import streamlit as st
 import pandas as pd
-from sqlalchemy import create_engine, text
+import numpy as np
+from mitosheet import sheet
+import graphviz
+from datetime import datetime
+import json
+import psycopg2
+from sqlalchemy import create_engine, MetaData, inspect
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, DataReturnMode
+from streamlit_react_flow import react_flow
 from streamlit_option_menu import option_menu
-from streamlit_elements import elements, dashboard, mui, html, nivo
-import os
-import sys
-from subprocess import run, PIPE
 
-# Try importing graphviz and handle potential import errors
-try:
-    import graphviz
-    GRAPHVIZ_AVAILABLE = True
-except ImportError:
-    GRAPHVIZ_AVAILABLE = False
-
-# Set page configuration to wide mode
+# Must be the first Streamlit command
 st.set_page_config(layout="wide")
 
-# Custom CSS for dashboard
+# Add custom CSS for React Flow
 st.markdown("""
 <style>
-    .element-container {
-        background-color: white;
-        border-radius: 10px;
+.react-flow {
+    height: 600px;
+    width: 100%;
+}
+.react-flow__node {
         padding: 10px;
-        margin: 10px;
-        box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    border-radius: 3px;
+    width: 150px;
+    font-size: 12px;
+    color: #222;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    background: #fff;
+    border-color: #1a192b;
+}
+.react-flow__edge {
+    stroke: #222;
+}
+.react-flow__edge-path {
+    stroke-width: 2;
+}
+.react-flow__edge-text {
+    font-size: 12px;
+}
+.react-flow__edge.animated path {
+    stroke-dasharray: 5;
+    animation: dashdraw 0.5s linear infinite;
+}
+@keyframes dashdraw {
+    from {
+        stroke-dashoffset: 10;
+    }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Set up the PostgreSQL connection
 def init_connection():
-    return create_engine('postgresql://postgres:mysecretpassword@localhost:5432/postgres')
+    """Initialize database connection."""
+    try:
+        conn = psycopg2.connect(
+            host="localhost",
+            database="postgres",
+            user="postgres",
+            password="mysecretpassword",
+            port="5432"
+        )
+        return conn
+    except Exception as e:
+        st.error(f"Failed to connect to database: {str(e)}")
+        return None
 
-# Function to get all table names
-def get_tables(engine):
-    query = """
-    SELECT table_name 
-    FROM information_schema.tables 
-    WHERE table_schema = 'public'
-    """
-    with engine.connect() as conn:
-        tables = pd.read_sql(query, conn)
-    return tables['table_name'].tolist()
+def get_tables():
+    """Get all tables from the database."""
+    try:
+        conn = init_connection()
+        if not conn:
+            return pd.DataFrame()
+        
+        query = """
+        SELECT table_name, table_type
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+        ORDER BY table_name;
+        """
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+    except Exception as e:
+        st.error(f"Failed to get tables: {str(e)}")
+        return pd.DataFrame()
 
-# Function to get table data
-def get_table_data(engine, table_name):
-    query = f"SELECT * FROM {table_name}"
-    with engine.connect() as conn:
-        return pd.read_sql(query, conn)
+def get_table_stats(table_name):
+    """Get table statistics."""
+    try:
+        conn = init_connection()
+        if not conn:
+            return pd.DataFrame({'total_rows': [0], 'unique_rows': [0]})
+        
+        # Get all column names
+        columns_query = """
+            SELECT column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+            AND table_name = %s
+            ORDER BY ordinal_position;
+            """
+        columns_df = pd.read_sql(columns_query, conn, params=[table_name])
+        columns = columns_df['column_name'].tolist()
+        
+        # Create concatenated columns string for distinct count
+        columns_concat = "CONCAT(" + ", '|', ".join(columns) + ")"
+        
+        # Get statistics
+        stats_query = f"""
+            SELECT 
+                COUNT(*) as total_rows,
+                COUNT(DISTINCT {columns_concat}) as unique_rows
+            FROM {table_name};
+            """
+        df = pd.read_sql(stats_query, conn)
+        conn.close()
+        return df
+    except Exception as e:
+        st.error(f"Failed to get table statistics: {str(e)}")
+        return pd.DataFrame({'total_rows': [0], 'unique_rows': [0]})
 
-# Function to get table schema
-def get_table_schema(engine, table_name):
-    query = f"""
+def get_table_schema(table_name):
+    """Get table schema."""
+    try:
+        conn = init_connection()
+        if not conn:
+            return pd.DataFrame()
+        
+        query = """
     SELECT 
         column_name,
         data_type,
         character_maximum_length,
-        column_default,
-        is_nullable
+                is_nullable,
+                column_default
     FROM information_schema.columns
-    WHERE table_name = '{table_name}'
+            WHERE table_schema = 'public'
+            AND table_name = %s
     ORDER BY ordinal_position;
     """
-    with engine.connect() as conn:
-        return pd.read_sql(query, conn)
-
-# Function to get table statistics
-def get_table_stats(engine, table_name):
-    query = f"""
-    SELECT 
-        COUNT(*) as total_rows,
-        COUNT(DISTINCT *) as unique_rows
-    FROM {table_name}
-    """
-    with engine.connect() as conn:
-        return pd.read_sql(query, conn)
-
-# Function to get column statistics
-def get_column_stats(engine, table_name, column_name):
-    query = f"""
-    SELECT 
-        '{column_name}' as field,
-        COUNT(*) as total,
-        COUNT(DISTINCT {column_name}) as unique_values,
-        COUNT(*) - COUNT({column_name}) as null_count
-    FROM {table_name}
-    """
-    with engine.connect() as conn:
-        return pd.read_sql(query, conn)
-
-def check_graphviz_installation():
-    """Check if Graphviz is properly installed in the system."""
-    try:
-        # Try running dot -V to check if Graphviz is installed
-        result = run(['dot', '-V'], stdout=PIPE, stderr=PIPE, text=True)
-        return result.returncode == 0
-    except FileNotFoundError:
-        return False
-
-# Function to generate ERD diagram
-def generate_erd(engine, output_dir="static/images"):
-    """
-    Generate an ERD diagram for the database schema.
-    
-    Args:
-        engine: SQLAlchemy engine
-        output_dir: Directory to save the generated files
-        
-    Returns:
-        str: Path to the generated PNG file
-    """
-    try:
-        # Check if Python graphviz package is available
-        if not GRAPHVIZ_AVAILABLE:
-            st.error("""
-                Python graphviz package is not installed. Please install it using:
-                ```
-                pip install python-graphviz
-                ```
-            """)
-            return None
-            
-        # Check if system Graphviz is installed
-        if not check_graphviz_installation():
-            st.error("""
-                System-level Graphviz is not installed. Please install it using:
-                
-                For macOS:
-                ```
-                brew install graphviz
-                ```
-                
-                For Ubuntu/Debian:
-                ```
-                sudo apt-get install graphviz
-                ```
-                
-                For Windows:
-                Download from https://graphviz.org/download/
-            """)
-            return None
-            
-        # Ensure output directory exists
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Create a new Graphviz graph
-        dot = graphviz.Digraph('erd')
-        dot.attr(rankdir='LR')
-        
-        # Set default node attributes
-        dot.attr('node', shape='record', style='filled', fillcolor='lightblue')
-        
-        # Add tables
-        tables = get_tables(engine)
-        for table in tables:
-            schema = get_table_schema(engine, table)
-            columns = [f"{row['column_name']} : {row['data_type']}" for _, row in schema.iterrows()]
-            table_label = f"{table}|{{'|'.join(columns)}}"
-            dot.node(table, table_label)
-        
-        # Add relationships
-        fk_query = """
-        SELECT
-            tc.table_name as source_table,
-            kcu.column_name as source_column,
-            ccu.table_name AS target_table,
-            ccu.column_name AS target_column
-        FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage kcu
-            ON tc.constraint_name = kcu.constraint_name
-        JOIN information_schema.constraint_column_usage ccu
-            ON ccu.constraint_name = tc.constraint_name
-        WHERE tc.constraint_type = 'FOREIGN KEY';
-        """
-        with engine.connect() as conn:
-            fk_results = pd.read_sql(fk_query, conn)
-        
-        # Add edges for foreign key relationships
-        for _, fk in fk_results.iterrows():
-            dot.edge(
-                fk["source_table"],
-                fk["target_table"],
-                _attributes={'arrowhead': 'crow', 'arrowtail': 'none'}
-            )
-        
-        try:
-            # Save the graph
-            output_path = os.path.join(output_dir, "schema_erd")
-            dot.render(output_path, format='png', cleanup=True)
-            return output_path + '.png'
-        except graphviz.ExecutableNotFound:
-            st.error("""
-                Graphviz executable not found in PATH. Please ensure Graphviz is properly installed 
-                and the 'dot' executable is in your system PATH.
-            """)
-            return None
-        
+        df = pd.read_sql(query, conn, params=[table_name])
+        conn.close()
+        return df
     except Exception as e:
-        st.error(f"Error generating ERD: {str(e)}")
+        st.error(f"Failed to get table schema: {str(e)}")
+        return pd.DataFrame()
+
+def get_table_preview(table_name):
+    """Get table preview data."""
+    try:
+        conn = init_connection()
+        if not conn:
+            return pd.DataFrame()
+        
+        query = f"SELECT * FROM {table_name} LIMIT 5"
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+    except Exception as e:
+        st.error(f"Failed to get table preview: {str(e)}")
+        return pd.DataFrame()
+
+def get_foreign_keys():
+    """Get all foreign key relationships."""
+    try:
+        conn = init_connection()
+        if not conn:
+            return []
+        
+        query = """
+    SELECT 
+                tc.table_schema, 
+                tc.constraint_name, 
+                tc.table_name as table, 
+                kcu.column_name as column, 
+                ccu.table_schema AS foreign_table_schema,
+                ccu.table_name AS referenced_table,
+                ccu.column_name AS referenced_column 
+            FROM 
+                information_schema.table_constraints AS tc 
+                JOIN information_schema.key_column_usage AS kcu
+                  ON tc.constraint_name = kcu.constraint_name
+                  AND tc.table_schema = kcu.table_schema
+                JOIN information_schema.constraint_column_usage AS ccu
+                  ON ccu.constraint_name = tc.constraint_name
+                  AND ccu.table_schema = tc.table_schema
+            WHERE tc.constraint_type = 'FOREIGN KEY';
+            """
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df.to_dict('records')
+    except Exception as e:
+        st.error(f"Failed to get foreign keys: {str(e)}")
+        return []
+
+def generate_erd(selected_tables):
+    """Generate ERD for multiple selected tables."""
+    try:
+        # Create a new directed graph
+        dot = graphviz.Digraph(comment='Entity Relationship Diagram')
+        dot.attr(rankdir='LR')
+        dot.attr('node', shape='plaintext')
+        
+        # Keep track of added tables to avoid duplicates
+        added_tables = set()
+        
+        # Process each selected table
+        for table_name in selected_tables:
+            if table_name in added_tables:
+                continue
+                
+            # Get schema for the table
+            schema = get_table_schema(table_name)
+            
+            # Create HTML-like label for the table
+            table_label = f'''<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+                <TR><TD PORT="title" BGCOLOR="#E8F4F8"><B>{table_name}</B></TD></TR>'''
+            
+            # Add columns
+            for _, row in schema.iterrows():
+                col_name = row['column_name']
+                data_type = row['data_type']
+                nullable = "NULL" if row['is_nullable'] == "YES" else "NOT NULL"
+                table_label += f'<TR><TD PORT="{col_name}" ALIGN="LEFT">{col_name} {data_type} {nullable}</TD></TR>'
+            
+            table_label += '</TABLE>>'
+            dot.node(table_name, table_label)
+            added_tables.add(table_name)
+            
+            # Get and add related tables through foreign keys
+            fks = get_foreign_keys()
+            
+            for fk in fks:
+                related_table = fk['referenced_table']
+                
+                # Only add the related table if it's in our selection
+                if related_table in selected_tables:
+                    if related_table not in added_tables:
+                        # Get schema for related table
+                        related_schema = get_table_schema(related_table)
+                        
+                        # Create HTML-like label for related table
+                        related_label = f'''<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+                            <TR><TD PORT="title" BGCOLOR="#E8F4F8"><B>{related_table}</B></TD></TR>'''
+                        
+                        # Add columns for related table
+                        for _, row in related_schema.iterrows():
+                            col_name = row['column_name']
+                            data_type = row['data_type']
+                            nullable = "NULL" if row['is_nullable'] == "YES" else "NOT NULL"
+                            related_label += f'<TR><TD PORT="{col_name}" ALIGN="LEFT">{col_name} {data_type} {nullable}</TD></TR>'
+                        
+                        related_label += '</TABLE>>'
+                        dot.node(related_table, related_label)
+                        added_tables.add(related_table)
+                    
+                    # Add edge for the relationship
+                    dot.edge(f'{table_name}:{fk["column"]}', f'{related_table}:{fk["referenced_column"]}')
+        
+        return dot
+    except Exception as e:
+        st.error(f"Failed to generate ERD: {str(e)}")
         return None
 
-# Streamlit app
-st.title('PostgreSQL Database Explorer')
+def get_joined_data(selected_tables, foreign_keys):
+    """Get joined data for selected tables based on their relationships."""
+    try:
+        conn = init_connection()
+        if not conn or len(selected_tables) < 2:
+            return pd.DataFrame()
+        
+        # Start with the first table
+        base_table = selected_tables[0]
+        joins = []
+        seen_tables = {base_table}
+        
+        # Build JOIN clauses based on foreign key relationships
+        for fk in foreign_keys:
+            table1 = fk['table']
+            table2 = fk['referenced_table']
+            col1 = fk['column']
+            col2 = fk['referenced_column']
+            
+            if table1 in selected_tables and table2 in selected_tables:
+                if table1 not in seen_tables and table2 in seen_tables:
+                    joins.append(f"LEFT JOIN {table1} ON {table2}.{col2} = {table1}.{col1}")
+                    seen_tables.add(table1)
+                elif table2 not in seen_tables and table1 in seen_tables:
+                    joins.append(f"LEFT JOIN {table2} ON {table1}.{col1} = {table2}.{col2}")
+                    seen_tables.add(table2)
+        
+        if not joins:
+            return pd.DataFrame()
+        
+        # Build column list for each table
+        columns = []
+        for table in selected_tables:
+            schema = get_table_schema(table)
+            columns.extend([f"{table}.{col} as {table}_{col}" for col in schema['column_name']])
+        
+        # Construct and execute query
+        query = f"""
+            SELECT {', '.join(columns)}
+            FROM {base_table}
+            {' '.join(joins)}
+            LIMIT 1000;
+        """
+        
+        df = pd.read_sql(query, conn)
+        conn.close()
+        return df
+    except Exception as e:
+        st.error(f"Failed to get joined data: {str(e)}")
+        return pd.DataFrame()
+    finally:
+        if conn:
+            conn.close()
 
-try:
-    # Initialize connection
-    engine = init_connection()
-    
-    # Horizontal menu
-    selected = option_menu(
-        menu_title=None,
-        options=["Dashboard", "Tables", "Schema", "Query", "Analytics"],
-        icons=["grid", "table", "list-columns", "search", "graph-up"],
-        menu_icon="cast",
-        default_index=0,
-        orientation="horizontal",
-    )
-    
-    # Get list of tables
-    tables = get_tables(engine)
-    
-    if tables:
-        # Create table selector
-        selected_table = st.selectbox('Select a table:', tables)
+def human_format(num):
+    """Format numbers in human readable format."""
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    return '%.1f%s' % (num, ['', 'K', 'M', 'B', 'T'][magnitude])
+
+def execute_query(query, conn):
+    """Execute a SQL query and return results as a DataFrame."""
+    try:
+        df = pd.read_sql_query(query, conn)
+        return df, None
+    except Exception as e:
+        return None, str(e)
+
+def get_table_names():
+    """Get list of table names from the database."""
+    try:
+        tables_df = get_tables()
+        return tables_df['table_name'].tolist()
+    except Exception as e:
+        st.error(f"Failed to get table names: {str(e)}")
+        return []
+
+def main():
+    conn = None
+    try:
+        conn = init_connection()
+        if not conn:
+            st.error("Failed to connect to database")
+            return
+
+        # Navigation menu at the top
+        selected = option_menu(
+            menu_title=None,
+            options=["Preview Data", "Schema", "Statistics", "ERD", "Query", "Architecture"],
+            icons=["table", "list-columns", "graph-up", "diagram-3", "code-square", "boxes"],
+            menu_icon="cast",
+            default_index=0,
+            orientation="horizontal",
+            styles={
+                "container": {"padding": "0!important", "background-color": "#f8f9fa", "margin-bottom": "20px"},
+                "icon": {"color": "#666", "font-size": "16px"},
+                "nav-link": {
+                    "font-size": "14px",
+                    "text-align": "center",
+                    "margin": "0px",
+                    "--hover-color": "#eee",
+                    "color": "#666",
+                },
+                "nav-link-selected": {"background-color": "#e8f4f8", "color": "#333"},
+            }
+        )
         
-        if selected_table:
-            if selected == "Dashboard":
-                # Dashboard layout
-                with elements("dashboard"):
-                    layout = [
-                        dashboard.Item("table_data", 0, 0, 6, 4),
-                        dashboard.Item("table_schema", 6, 0, 6, 4),
-                        dashboard.Item("table_stats", 0, 4, 12, 2),
-                    ]
-                    
-                    with dashboard.Grid(layout):
-                        with mui.Card(key="table_data", sx={"height": "100%"}):
-                            mui.CardHeader(title="Table Data Preview")
-                            with mui.CardContent():
-                                data = get_table_data(engine, selected_table).head()
-                                st.dataframe(data, use_container_width=True)
-                        
-                        with mui.Card(key="table_schema", sx={"height": "100%"}):
-                            mui.CardHeader(title="Table Schema")
-                            with mui.CardContent():
-                                schema = get_table_schema(engine, selected_table)
-                                st.dataframe(schema, use_container_width=True)
-                        
-                        with mui.Card(key="table_stats", sx={"height": "100%"}):
-                            mui.CardHeader(title="Table Statistics")
-                            with mui.CardContent():
-                                stats = get_table_stats(engine, selected_table)
-                                col1, col2 = st.columns(2)
-                                with col1:
-                                    st.metric("Total Rows", stats['total_rows'].iloc[0])
-                                with col2:
-                                    st.metric("Unique Rows", stats['unique_rows'].iloc[0])
+        # Search box
+        st.markdown('<div class="search-container">', unsafe_allow_html=True)
+        search_term = st.text_input("Search tables...", 
+                                   placeholder="Search by table name...", 
+                                   label_visibility="collapsed")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Get and filter tables
+        tables_df = get_tables()
+        if search_term:
+            tables_df = tables_df[tables_df['table_name'].str.contains(search_term, case=False)]
+        
+        # Statistics Dashboard - Horizontal Layout
+        total_tables = len(tables_df[tables_df['table_type'] == 'BASE TABLE'])
+        total_views = len(tables_df[tables_df['table_type'] == 'VIEW'])
+        total_rows = sum([get_table_stats(table)['total_rows'].iloc[0] 
+                         for table in tables_df['table_name']])
+        
+        st.markdown('''
+        <div class="stats-container">
+            <div class="stats-dashboard">
+                <div class="stat-card">
+                    <p class="stat-value">{}</p>
+                    <p class="stat-label">Base Tables</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-value">{}</p>
+                    <p class="stat-label">Views</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-value">{}</p>
+                    <p class="stat-label">Total Rows</p>
+                </div>
+            </div>
+        </div>
+        '''.format(total_tables, total_views, human_format(total_rows)), unsafe_allow_html=True)
+        
+        # Display tables with their respective views
+        if selected in ["Preview Data", "Schema", "Statistics"]:
+            for _, row in tables_df.iterrows():
+                table_name = row['table_name']
+                stats = get_table_stats(table_name)
+                schema = get_table_schema(table_name)
+                
+                # Display table info with consistent light blue background
+                st.markdown(f'''
+                <div class="table-info-header">
+                    <div class="table-name">{table_name}</div>
+                    <div class="table-metrics">
+                        <span>{human_format(stats['total_rows'].iloc[0])} Total Rows</span>
+                        <span>{len(schema)} Columns</span>
+                    </div>
+                    <div class="table-metadata">
+                        <span>Owner: postgres</span>
+                        <span>Created: {datetime.now().strftime('%Y-%m-%d')}</span>
+                    </div>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+                if selected == "Preview Data":
+                    with st.expander("Preview", expanded=False):
+                        st.dataframe(get_table_preview(table_name))
+                elif selected == "Schema":
+                    with st.expander("Schema", expanded=False):
+                        st.dataframe(schema)
+                else:  # Statistics view
+                    with st.expander("Statistics", expanded=False):
+                        st.dataframe(stats)
+        
+        elif selected == "Query":
+            st.header("SQL Query Interface")
             
-            elif selected == "Analytics":
-                # Get schema to identify columns
-                schema = get_table_schema(engine, selected_table)
-                columns = schema['column_name'].tolist()
-                
-                with elements("analytics"):
-                    # Layout for analytics dashboard
-                    layout = [
-                        dashboard.Item("column_stats", 0, 0, 12, 3),
-                        dashboard.Item("data_completeness", 0, 3, 6, 4),
-                        dashboard.Item("value_distribution", 6, 3, 6, 4),
-                    ]
-                    
-                    with dashboard.Grid(layout):
-                        # Column Statistics Card with Nivo Bar Chart
-                        with mui.Card(key="column_stats", sx={"height": "100%"}):
-                            mui.CardHeader(title="Column Statistics")
-                            with mui.CardContent():
-                                # Get stats for each column
-                                stats_data = []
-                                for col in columns[:5]:  # Limit to first 5 columns for performance
-                                    stats = get_column_stats(engine, selected_table, col)
-                                    stats_data.append({
-                                        "column": col,
-                                        "total": int(stats['total'].iloc[0]),
-                                        "unique": int(stats['unique_values'].iloc[0]),
-                                        "nulls": int(stats['null_count'].iloc[0])
-                                    })
-                                
-                                # Create Nivo bar chart
-                                with mui.Box(sx={"height": 200}):
-                                    nivo.Bar(
-                                        data=stats_data,
-                                        keys=["total", "unique", "nulls"],
-                                        indexBy="column",
-                                        margin={"top": 50, "right": 130, "bottom": 50, "left": 60},
-                                        padding=0.3,
-                                        valueScale={"type": "linear"},
-                                        indexScale={"type": "band", "round": True},
-                                        colors={"scheme": "nivo"},
-                                        borderColor={"from": "color", "modifiers": [["darker", 1.6]]},
-                                        axisTop=None,
-                                        axisRight=None,
-                                        axisBottom={
-                                            "tickSize": 5,
-                                            "tickPadding": 5,
-                                            "tickRotation": -45,
-                                            "legend": "Column",
-                                            "legendPosition": "middle",
-                                            "legendOffset": 40
-                                        },
-                                        axisLeft={
-                                            "tickSize": 5,
-                                            "tickPadding": 5,
-                                            "tickRotation": 0,
-                                            "legend": "Count",
-                                            "legendPosition": "middle",
-                                            "legendOffset": -40
-                                        },
-                                        labelSkipWidth=12,
-                                        labelSkipHeight=12,
-                                        legends=[
-                                            {
-                                                "dataFrom": "keys",
-                                                "anchor": "bottom-right",
-                                                "direction": "column",
-                                                "justify": False,
-                                                "translateX": 120,
-                                                "translateY": 0,
-                                                "itemsSpacing": 2,
-                                                "itemWidth": 100,
-                                                "itemHeight": 20,
-                                                "itemDirection": "left-to-right",
-                                                "itemOpacity": 0.85,
-                                                "symbolSize": 20,
-                                                "effects": [
-                                                    {
-                                                        "on": "hover",
-                                                        "style": {
-                                                            "itemOpacity": 1
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    )
-                        
-                        # Data Completeness Card with Nivo Pie Chart
-                        with mui.Card(key="data_completeness", sx={"height": "100%"}):
-                            mui.CardHeader(title="Data Completeness")
-                            with mui.CardContent():
-                                # Calculate completeness for first column
-                                if columns:
-                                    stats = get_column_stats(engine, selected_table, columns[0])
-                                    total = int(stats['total'].iloc[0])
-                                    nulls = int(stats['null_count'].iloc[0])
-                                    complete = total - nulls
-                                    
-                                    pie_data = [
-                                        {"id": "Complete", "label": "Complete", "value": complete},
-                                        {"id": "Missing", "label": "Missing", "value": nulls}
-                                    ]
-                                    
-                                    with mui.Box(sx={"height": 300}):
-                                        nivo.Pie(
-                                            data=pie_data,
-                                            margin={"top": 40, "right": 80, "bottom": 80, "left": 80},
-                                            innerRadius=0.5,
-                                            padAngle=0.7,
-                                            cornerRadius=3,
-                                            activeOuterRadiusOffset=8,
-                                            colors={"scheme": "nivo"},
-                                            borderWidth=1,
-                                            borderColor={
-                                                "from": "color",
-                                                "modifiers": [["darker", 0.2]]
-                                            },
-                                            arcLinkLabelsSkipAngle=10,
-                                            arcLinkLabelsTextColor="#333333",
-                                            arcLinkLabelsThickness=2,
-                                            arcLinkLabelsColor={"from": "color"},
-                                            arcLabelsSkipAngle=10,
-                                            arcLabelsTextColor={
-                                                "from": "color",
-                                                "modifiers": [["darker", 2]]
-                                            },
-                                            legends=[
-                                                {
-                                                    "anchor": "bottom",
-                                                    "direction": "row",
-                                                    "justify": False,
-                                                    "translateX": 0,
-                                                    "translateY": 56,
-                                                    "itemsSpacing": 0,
-                                                    "itemWidth": 100,
-                                                    "itemHeight": 18,
-                                                    "itemTextColor": "#999",
-                                                    "itemDirection": "left-to-right",
-                                                    "itemOpacity": 1,
-                                                    "symbolSize": 18,
-                                                    "symbolShape": "circle",
-                                                    "effects": [
-                                                        {
-                                                            "on": "hover",
-                                                            "style": {
-                                                                "itemTextColor": "#000"
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ]
-                                        )
-                        
-                        # Value Distribution Card with Nivo Line Chart
-                        with mui.Card(key="value_distribution", sx={"height": "100%"}):
-                            mui.CardHeader(title="Value Distribution Over Time")
-                            with mui.CardContent():
-                                st.info("Select a datetime column to view distribution over time")
-                                
-            elif selected == "Tables":
-                # Display table data
-                st.subheader(f'Data from table: {selected_table}')
-                data = get_table_data(engine, selected_table)
-                st.dataframe(data, use_container_width=True)
-                st.write(f'Total rows: {len(data)}')
-                
-            elif selected == "Schema":
-                # Schema section with ERD and table details
-                st.subheader("Database Schema")
-                
-                # Add description and instructions
-                st.markdown("""
-                This section shows the complete database schema and relationships between tables.
-                - Tables are shown as boxes with their columns
-                - Arrows indicate foreign key relationships
-                - The crow's foot (→) indicates a many-to-one relationship
-                """)
-                
-                # Create two columns for layout
-                col1, col2 = st.columns([2, 1])
-                
-                with col1:
-                    st.subheader("Entity-Relationship Diagram")
-                    # Generate ERD button
-                    if st.button("Generate ERD"):
-                        with st.spinner("Generating ERD diagram..."):
-                            erd_path = generate_erd(engine)
-                            if erd_path and os.path.exists(erd_path):
-                                st.image(erd_path, use_container_width=True)
-                            else:
-                                st.error("Failed to generate ERD diagram")
-                
-                with col2:
-                    st.subheader("Table Details")
-                    # Show schema for selected table
-                    if selected_table:
-                        schema = get_table_schema(engine, selected_table)
-                        st.markdown(f"**Schema for table: {selected_table}**")
-                        st.dataframe(schema, use_container_width=True)
-                        
-                        # Show table statistics
-                        stats = get_table_stats(engine, selected_table)
-                        st.markdown("**Table Statistics:**")
-                        st.metric("Total Rows", stats['total_rows'].iloc[0])
-                        st.metric("Unique Rows", stats['unique_rows'].iloc[0])
-                    else:
-                        st.info("Select a table to view its schema details")
+            # Query input with syntax highlighting
+            query = st.text_area("Enter your SQL query:", height=150)
             
-            elif selected == "Query":
-                # Custom query interface
-                st.subheader('Custom SQL Query')
-                default_query = f"SELECT * FROM {selected_table} LIMIT 5;"
-                query = st.text_area("Enter your SQL query:", value=default_query, height=100)
-                
-                if st.button('Run Query'):
+            if st.button("Run Query"):
+                if query:
                     try:
-                        with engine.connect() as conn:
-                            result = pd.read_sql(query, conn)
-                            st.dataframe(result, use_container_width=True)
-                            st.write(f'Results: {len(result)} rows')
+                        df, error = execute_query(query, conn)
+                        if error:
+                            st.error(f"Error executing query: {error}")
+                        else:
+                            st.success("Query executed successfully!")
+                            st.markdown('''
+                            <div class="query-results">
+                                <h3>Query Results</h3>
+                            </div>
+                            ''', unsafe_allow_html=True)
+                            st.dataframe(df)
                     except Exception as e:
-                        st.error(f'Query error: {str(e)}')
-    else:
-        st.warning('No tables found in the database.')
+                        st.error(f"Error executing query: {str(e)}")
+                else:
+                    st.warning("Please enter a query to execute")
         
-except Exception as e:
-    st.error(f'Error connecting to database: {str(e)}')
+        elif selected == "ERD":
+            st.header("Entity Relationship Diagram")
+            
+            try:
+                # Table selection
+                tables = get_table_names()
+                selected_tables = st.multiselect("Select tables to view relationships", tables)
+                
+                if selected_tables:
+                    # ERD zoom control
+                    zoom_level = st.slider("Zoom Level", 0.5, 2.0, 1.0, 0.1, key="erd_zoom")
+                    
+                    # Generate and display ERD using Graphviz
+                    dot = generate_erd(selected_tables)
+                    if dot:
+                        dot.attr(rankdir='LR', size=str(11*zoom_level))
+                        st.graphviz_chart(dot)
+                    
+                    # Show joined data if multiple tables selected
+                    if len(selected_tables) > 1:
+                        with st.expander("View Joined Data"):
+                            df = get_joined_data(selected_tables, get_foreign_keys())
+                            if df is not None and not df.empty:
+                                gb = GridOptionsBuilder.from_dataframe(df)
+                                gb.configure_default_column(groupable=True, value=True, enableRowGroup=True,
+                                                         aggFunc='sum', editable=False)
+                                gb.configure_selection('multiple', use_checkbox=True)
+                                gb.configure_grid_options(domLayout='normal')
+                                gridOptions = gb.build()
+                                
+                                grid_response = AgGrid(
+                                    df,
+                                    gridOptions=gridOptions,
+                                    height=400,
+                                    data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
+                                    update_mode=GridUpdateMode.MODEL_CHANGED,
+                                    fit_columns_on_grid_load=True
+                                )
+                                
+                                selected_rows = grid_response['selected_rows']
+                                if selected_rows:
+                                    st.write('Selected rows:')
+                                    st.dataframe(pd.DataFrame(selected_rows))
+            except Exception as e:
+                st.error(f"Error in ERD view: {str(e)}")
+        
+        elif selected == "Architecture":
+            st.header("Database Architecture")
+            
+            try:
+                # Get tables and relationships
+                tables = get_table_names()
+                fks = get_foreign_keys()
+                
+                # Calculate layout positions
+                num_tables = len(tables)
+                columns = min(4, num_tables)  # Maximum 4 tables per row
+                rows = (num_tables + columns - 1) // columns
+                spacing_x = 300  # Horizontal spacing between nodes
+                spacing_y = 200  # Vertical spacing between rows
+                
+                # Create nodes for each table with calculated positions
+                elements = []
+                for i, table in enumerate(tables):
+                    row = i // columns
+                    col = i % columns
+                    elements.append({
+                        'id': table,
+                        'data': {'label': table},
+                        'position': {
+                            'x': col * spacing_x + 100,  # Add initial offset
+                            'y': row * spacing_y + 100   # Add initial offset
+                        },
+                        'style': {
+                            'background': '#e8f4f8',
+                            'width': 180,
+                            'border': '1px solid #666',
+                            'borderRadius': '4px',
+                            'padding': '10px',
+                            'fontSize': '14px'
+                        }
+                    })
+                
+                # Add edges for relationships with improved styling
+                for fk in fks:
+                    elements.append({
+                        'id': f"{fk['table']}-{fk['referenced_table']}",
+                        'source': fk['table'],
+                        'target': fk['referenced_table'],
+                        'animated': True,
+                        'label': f"{fk['column']} → {fk['referenced_column']}",
+                        'style': {
+                            'stroke': '#666',
+                            'strokeWidth': 2
+                        },
+                        'labelStyle': {
+                            'fontSize': '12px',
+                            'fill': '#666'
+                        },
+                        'type': 'smoothstep'  # Use smooth edges
+                    })
+                
+                # Set flow styles
+                flow_styles = {
+                    'height': f'{max(600, rows * spacing_y + 200)}px',
+                    'width': '100%',
+                    'background': '#f8f9fa',
+                    'border': '1px solid #ddd',
+                    'borderRadius': '4px'
+                }
+                
+                # Render the flow diagram
+                react_flow(
+                    "db_architecture",
+                    elements=elements,
+                    flow_styles=flow_styles,
+                    fit_view=True,
+                    node_dimensions_change_mode='default',
+                    edge_type='smoothstep',
+                    min_zoom=0.5,
+                    max_zoom=2
+                )
+            except Exception as e:
+                st.error(f"Error in Architecture view: {str(e)}")
+
+    except Exception as e:
+        st.error(f"An error occurred: {str(e)}")
+    finally:
+        if conn:
+            conn.close()
+
+if __name__ == "__main__":
+    main()

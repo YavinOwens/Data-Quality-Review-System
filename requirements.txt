@@ -10,47 +10,38 @@ psycopg2-binary==2.9.10
 SQLAlchemy==2.0.39
 
 # Data Processing and Analysis
-numpy==2.2.4
-pandas==2.2.3
-polars==1.25.2
-python-dateutil==2.9.0.post0
-pytz==2025.1
+pandas==2.2.0
+numpy==1.26.4
+polars==0.20.7
 pyspark==3.5.1
-pyarrow==19.0.1
+pyarrow==14.0.1
 findspark==2.0.1
 
 # Data Validation and Quality
-pydantic==2.10.6
-pydantic-core==2.27.2
-pandera==0.23.1
-great-expectations==1.3.10
+pandera==0.18.0
+great-expectations==0.18.9
 
 # Visualization and Documentation
-matplotlib==3.10.1
+matplotlib==3.8.3
 seaborn==0.13.2
-Jinja2==3.1.6
-Pillow==11.1.0
-plotly==6.0.0
+plotly==5.18.0
 
 # String Processing
-toml==0.10.2
+python-Levenshtein==0.23.0
 
 # Package Management
-pip>=25.0.1
+pip-tools==7.4.0
 
 # Jupyter Environment
-jupyter==1.1.1
-notebook==7.3.3
-ipynb-py-convert==0.4.6
-ipython==9.0.2
-jupyterlab==4.3.6
-nbformat==5.10.4
-nbconvert==7.16.6
+jupyter==1.0.0
+notebook==7.0.7
+ipykernel==6.29.0
+nbformat==5.9.2
+nbconvert==7.16.0
 
 # Additional Dependencies
-python-dotenv==1.0.1
-PyYAML==6.0.2
-requests==2.32.3
-typing_extensions==4.12.2
 tqdm==4.66.2
-scikit-learn==1.6.1
+scikit-learn==1.4.0
+
+# New package
+streamlit-option-menu==0.3.12
