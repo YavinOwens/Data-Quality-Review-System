@@ -11,7 +11,7 @@ SQLAlchemy==2.0.39
 
 # Data Processing and Analysis
 pandas==2.2.0
-numpy==1.26.4
+numpy==1.26.3
 polars==0.20.7
 pyspark==3.5.1
 pyarrow==14.0.1
@@ -45,3 +45,9 @@ scikit-learn==1.4.0
 
 # New package
 streamlit-option-menu==0.3.12
+streamlit-aggrid==0.3.4
+
+# Additional dependencies
+oracledb==2.0.0
+requests==2.31.0
+python-dotenv==1.0.0

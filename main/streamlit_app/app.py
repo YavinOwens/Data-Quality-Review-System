@@ -76,10 +76,10 @@ def get_tables():
         if not conn:
             return pd.DataFrame()
         
-        query = """
+    query = """
         SELECT table_name, table_type
-        FROM information_schema.tables
-        WHERE table_schema = 'public'
+    FROM information_schema.tables 
+    WHERE table_schema = 'public'
         ORDER BY table_name;
         """
         df = pd.read_sql(query, conn)
@@ -304,7 +304,7 @@ def get_joined_data(selected_tables, foreign_keys):
             columns.extend([f"{table}.{col} as {table}_{col}" for col in schema['column_name']])
         
         # Construct and execute query
-        query = f"""
+    query = f"""
             SELECT {', '.join(columns)}
             FROM {base_table}
             {' '.join(joins)}
@@ -355,13 +355,13 @@ def main():
             return
 
         # Navigation menu at the top
-        selected = option_menu(
-            menu_title=None,
+    selected = option_menu(
+        menu_title=None,
             options=["Preview Data", "Schema", "Statistics", "ERD", "Query", "Architecture"],
             icons=["table", "list-columns", "graph-up", "diagram-3", "code-square", "boxes"],
-            menu_icon="cast",
-            default_index=0,
-            orientation="horizontal",
+        menu_icon="cast",
+        default_index=0,
+        orientation="horizontal",
             styles={
                 "container": {"padding": "0!important", "background-color": "#f8f9fa", "margin-bottom": "20px"},
                 "icon": {"color": "#666", "font-size": "16px"},
@@ -592,10 +592,10 @@ def main():
                     min_zoom=0.5,
                     max_zoom=2
                 )
-            except Exception as e:
+                    except Exception as e:
                 st.error(f"Error in Architecture view: {str(e)}")
-
-    except Exception as e:
+        
+except Exception as e:
         st.error(f"An error occurred: {str(e)}")
     finally:
         if conn:

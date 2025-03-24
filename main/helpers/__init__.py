@@ -12,7 +12,7 @@ if package_dir not in sys.path:
     sys.path.append(package_dir)
 
 # Import the main components
-from helpers.db_connection import DatabaseConnection, create_connection
+from .db_connection import get_connection, query_to_df, DatabaseConnection
 from helpers.sql_queries import (
     get_table_names,
     get_table_schema,
@@ -24,8 +24,9 @@ from helpers.schema_page_updater import update_schema_page, get_schema_section
 
 # Define what should be available when using 'from helpers import *'
 __all__ = [
+    'get_connection',
+    'query_to_df',
     'DatabaseConnection',
-    'create_connection',
     'get_table_names',
     'get_table_schema',
     'get_sample_data',

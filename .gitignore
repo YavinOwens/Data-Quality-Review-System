@@ -2,7 +2,8 @@
 /servers/
 servers/
 
-# Docker
+.new/
+# Docker/
 .docker/
 docker-compose.override.yml
 docker-compose.yml
