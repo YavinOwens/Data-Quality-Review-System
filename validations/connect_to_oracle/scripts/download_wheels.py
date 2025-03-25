@@ -53,64 +53,88 @@ def download_base_wheels(wheel_dir):
         print(f"Error downloading base wheels: {e}")
         sys.exit(1)
 
-def download_wheels(requirements_file, wheel_dir):
-    """Download wheel files based on requirements.txt."""
-    try:
-        # Create wheel directory if it doesn't exist
-        create_directory(wheel_dir)
-        
-        # Download base wheels first
-        download_base_wheels(wheel_dir)
-        
-        # Get platform-specific tag
-        platform_tag = get_platform_tag()
-        
-        # Check if we're on Apple Silicon
-        is_apple_silicon = platform.system().lower() == 'darwin' and 'arm' in platform.machine().lower()
-        
-        # Download wheels
-        cmd = [
-            sys.executable, 
-            "-m", 
-            "pip", 
-            "download",
-            "--only-binary=:all:",
-            "--platform", platform_tag,
-            "--python-version", "310",  # Python 3.10
-            "--implementation", "cp",  # CPython
-            "--dest", str(wheel_dir),
-            "-r", str(requirements_file)
-        ]
-        
-        print(f"\nDownloading wheels for platform: {platform_tag}")
-        
-        # For Apple Silicon, we'll skip cx-Oracle and use oracledb instead
-        if is_apple_silicon:
-            print("\nNote: Using oracledb instead of cx-Oracle for Apple Silicon support")
-            # Remove cx-Oracle from requirements temporarily
-            temp_requirements = requirements_file.parent / "temp_requirements.txt"
-            with open(requirements_file, 'r') as f:
-                requirements = f.readlines()
-            with open(temp_requirements, 'w') as f:
-                for req in requirements:
-                    if not req.strip().startswith('cx-Oracle'):
-                        f.write(req)
-            cmd[-1] = str(temp_requirements)
-        
-        subprocess.run(cmd, check=True)
-        
-        # Clean up temporary requirements file if it exists
-        if is_apple_silicon and temp_requirements.exists():
-            temp_requirements.unlink()
-        
-        print(f"Successfully downloaded wheels to: {wheel_dir}")
-        
-    except subprocess.CalledProcessError as e:
-        print(f"Error downloading wheels: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        sys.exit(1)
+def download_wheels():
+    """Download all required wheels for offline installation."""
+    # Get system information
+    system = platform.system().lower()
+    machine = platform.machine().lower()
+    python_version = f"{sys.version_info.major}.{sys.version_info.minor}"
+    
+    print(f"System: {system}")
+    print(f"Machine: {machine}")
+    print(f"Python version: {python_version}")
+    
+    # Create wheels directory if it doesn't exist
+    wheel_dir = Path(__file__).parent.parent / "wheels"
+    wheel_dir.mkdir(exist_ok=True)
+    
+    # Download base wheels first
+    download_base_wheels(wheel_dir)
+    
+    # Determine platform-specific suffix
+    if system == "darwin":
+        if machine == "arm64":
+            platform_suffix = "macosx_11_0_arm64"
+        else:
+            platform_suffix = "macosx_10_9_x86_64"
+    elif system == "windows":
+        platform_suffix = "win_amd64"
+    else:  # Linux
+        platform_suffix = "manylinux_2_17_x86_64.manylinux2014_x86_64"
+    
+    print(f"\nDownloading wheels for platform: {platform_suffix}")
+    
+    # List of packages to download
+    packages = [
+        "oracledb>=2.0.1",
+        "pandas>=2.2.0",
+        "numpy>=1.26.0",
+        "sqlalchemy>=2.0.0",
+        "python-dateutil>=2.8.2",
+        "pytz>=2024.1",
+        "tzdata>=2024.1",
+        "openpyxl>=3.1.2",
+        "xlrd>=2.0.1",
+        "xlwt>=1.3.0",
+        "XlsxWriter>=3.1.9",
+        "tables>=3.8.0",
+        "pyarrow>=15.0.0",
+        "psutil>=5.9.8",
+        "py-cpuinfo>=9.0.0",
+        "cryptography>=42.0.0",
+        "cffi>=1.16.0",
+        "python_dotenv>=1.0.0",
+        "blosc2>=2.3.0",
+        "markupsafe>=2.1.5",
+        "attrs>=23.2.0",
+        "zipp>=3.17.0",
+        "typing_extensions>=4.9.0",
+        "packaging>=24.0",
+        "importlib_metadata>=7.0.1",
+        "jupyter>=1.0.0",
+        "nbconvert>=7.16.0",
+        "jupytext>=1.16.0",
+        "notebook>=7.0.0"
+    ]
+    
+    # Download wheels for each package
+    for package in packages:
+        try:
+            print(f"\nDownloading wheel for {package}...")
+            subprocess.run([
+                sys.executable, "-m", "pip", "download",
+                "--only-binary=:all:",
+                "--platform", platform_suffix,
+                "--python-version", python_version,
+                "--dest", str(wheel_dir),
+                package
+            ], check=True)
+            print(f"Successfully downloaded wheel for {package}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error downloading wheel for {package}:")
+            print(f"stdout: {e.stdout.decode() if e.stdout else 'No output'}")
+            print(f"stderr: {e.stderr.decode() if e.stderr else 'No error output'}")
+            raise
 
 def main():
     # Get script directory
@@ -127,7 +151,7 @@ def main():
     print(f"Python Version: {sys.version.split()[0]}")
     
     # Download wheels
-    download_wheels(requirements_file, wheel_dir)
+    download_wheels()
     
     print("\nWheel files downloaded successfully!")
     print("\nNext steps:")

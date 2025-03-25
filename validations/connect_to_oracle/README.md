@@ -1,6 +1,6 @@
 # Oracle 19c Offline Connectivity Package
 
-This package provides functionality for connecting to Oracle 19c databases in an offline environment using Python 3.10.
+This package provides a comprehensive solution for connecting to Oracle 19c databases in an offline environment, with support for both thick and thin mode connections.
 
 ## System Requirements
 
@@ -25,179 +25,247 @@ connect_to_oracle/
 └── README.md              # This file
 ```
 
+## Included Wheels
+
+The `wheels/` directory contains pre-downloaded wheel files for offline installation, including:
+
+### Base Wheels (Required for Environment Setup)
+- `setuptools-78.0.2-py3-none-any.whl` - Package development tools
+- `pip-25.0.1-py3-none-any.whl` - Package installer
+- `wheel-0.45.1-py3-none-any.whl` - Wheel package format support
+
+### Core Dependencies
+- `oracledb-1.4.2-cp310-cp310-macosx_10_9_universal2.whl` - Oracle database driver
+- `pandas-2.2.1-cp310-cp310-macosx_11_0_arm64.whl` - Data manipulation library
+- `numpy-1.26.4-cp310-cp310-macosx_11_0_arm64.whl` - Numerical computing library
+- `SQLAlchemy-2.0.27-cp310-cp310-macosx_11_0_arm64.whl` - SQL toolkit and ORM
+
+### Additional Dependencies
+- Excel support: `openpyxl`, `xlrd`, `xlwt`, `XlsxWriter`
+- Performance optimization: `psutil`, `py-cpuinfo`
+- Security: `cryptography`, `cffi`
+- Date/Time handling: `python-dateutil`, `pytz`, `tzdata`
+
+## Platform Support
+
+### Current Platform Support
+The included wheels are specifically built for:
+- Python 3.10
+- macOS ARM64 (Apple Silicon)
+
+### Users on Different Platforms
+If you're using a different platform, you'll need to download the appropriate wheels:
+
+1. **Windows Users**:
+   ```bash
+   # On an online Windows machine
+   python scripts/download_wheels.py
+   # Copy the wheels directory to your offline machine
+   ```
+
+2. **Linux Users**:
+   ```bash
+   # On an online Linux machine
+   python scripts/download_wheels.py
+   # Copy the wheels directory to your offline machine
+   ```
+
+3. **Intel Mac Users**:
+   ```bash
+   # On an online Intel Mac
+   python scripts/download_wheels.py
+   # Copy the wheels directory to your offline machine
+   ```
+
 ## Setup Instructions
 
-### 1. On a Machine with Internet Access
-
-1. Ensure Python 3.10 is installed
-2. Navigate to the `connect_to_oracle` directory
-3. Run the download script:
+1. **Create Virtual Environment**:
    ```bash
-   # Windows
-   python scripts\download_wheels.py
-   
-   # macOS/Linux
-   python scripts/download_wheels.py
+   python -m venv .venv
+   source .venv/bin/activate  # On Unix/macOS
+   # or
+   .venv\Scripts\activate  # On Windows
    ```
-4. Copy the entire `connect_to_oracle` directory to the offline machine
 
-### 2. On the Offline Machine
-
-1. Ensure Python 3.10 is installed
-2. Install Oracle Client libraries if using thick mode:
-   - Windows:
-     1. Download Oracle Instant Client 19c from Oracle's website
-     2. Extract to a directory (e.g., `C:\oracle\instantclient_19_20`)
-     3. Add the directory to PATH environment variable
-   - macOS:
-     1. Download Oracle Instant Client 19c from Oracle's website
-     2. Extract to a directory (e.g., `/opt/oracle/instantclient_19_20`)
-     3. Set `ORACLE_HOME` environment variable
-   - Linux:
-     1. Download Oracle Instant Client 19c from Oracle's website
-     2. Extract to a directory (e.g., `/opt/oracle/instantclient_19_20`)
-     3. Set `ORACLE_HOME` environment variable
-3. Navigate to the `connect_to_oracle` directory
-4. Install the downloaded wheels:
+2. **Install Base Wheels First**:
    ```bash
-   # Windows
-   python scripts\install_wheels.py
-   
-   # macOS/Linux
+   pip install wheels/setuptools-78.0.2-py3-none-any.whl
+   pip install wheels/wheel-0.45.1-py3-none-any.whl
+   pip install wheels/pip-25.0.1-py3-none-any.whl
+   ```
+
+3. **Install All Dependencies**:
+   ```bash
    python scripts/install_wheels.py
+   ```
+
+4. **Test Connection**:
+   ```bash
+   python scripts/test_connection.py
    ```
 
 ## Configuration
 
-Set the following environment variables for database connection:
+1. **Environment Variables**:
+   Create a `.env` file in the project root:
+   ```
+   ORACLE_HOST=your_host
+   ORACLE_PORT=1521
+   ORACLE_SERVICE=your_service
+   ORACLE_USER=your_username
+   ORACLE_PASSWORD=your_password
+   ORACLE_THICK_MODE=true
+   ORACLE_LIB_DIR=/path/to/oracle/instantclient
+   ```
 
-```bash
-# Windows (Command Prompt)
-set ORACLE_HOST=your_host
-set ORACLE_PORT=1521
-set ORACLE_SERVICE=your_service_name
-set ORACLE_USER=your_username
-set ORACLE_PASSWORD=your_password
+2. **Thick Mode Setup**:
+   - Download Oracle Instant Client
+   - Set `ORACLE_THICK_MODE=true`
+   - Configure `ORACLE_LIB_DIR`
 
-# Windows (PowerShell)
-$env:ORACLE_HOST="your_host"
-$env:ORACLE_PORT="1521"
-$env:ORACLE_SERVICE="your_service_name"
-$env:ORACLE_USER="your_username"
-$env:ORACLE_PASSWORD="your_password"
+## Usage Examples
 
-# macOS/Linux
-export ORACLE_HOST="your_host"
-export ORACLE_PORT="1521"
-export ORACLE_SERVICE="your_service_name"
-export ORACLE_USER="your_username"
-export ORACLE_PASSWORD="your_password"
-```
-
-## Testing the Connection
-
-Run the test script to verify connectivity:
-
-```bash
-# Windows
-python scripts\test_connection.py
-
-# macOS/Linux
-python scripts/test_connection.py
-```
-
-## Usage Example
-
+### Basic Connection
 ```python
 from db_connection import DatabaseConnection
 
-# Create connection instance
+# Using environment variables
+with DatabaseConnection() as db:
+    result = db.query_to_df("SELECT * FROM your_table")
+    print(result)
+```
+
+### Custom Connection
+```python
+from db_connection import DatabaseConnection
+
+# Custom connection parameters
 db = DatabaseConnection(
-    host="localhost",
+    host="your_host",
     port=1521,
-    service_name="ORCLCDB",
-    user="system",
-    password="password",
-    thick_mode=True,  # Set to True if using Oracle Client libraries
-    lib_dir="C:/oracle/instantclient_19_20"  # Path to Oracle Client libraries
+    service_name="your_service",
+    user="your_username",
+    password="your_password",
+    thick_mode=True,
+    lib_dir="/path/to/oracle/instantclient"
 )
 
-# Execute query and get results as DataFrame
-df = db.query_to_df("SELECT * FROM your_table")
+# Test connection
+if db.test_connection():
+    print("Connection successful!")
+    # Execute queries
+    result = db.query_to_df("SELECT * FROM your_table")
+    print(result)
+else:
+    print("Connection failed!")
 
 # Close connection
 db.close()
 ```
 
+### Bulk Insert Example
+```python
+from db_connection import DatabaseConnection
+import pandas as pd
+
+# Create sample data
+data = {
+    'column1': [1, 2, 3],
+    'column2': ['a', 'b', 'c']
+}
+df = pd.DataFrame(data)
+
+# Insert data
+with DatabaseConnection() as db:
+    db.bulk_insert('your_table', df)
+```
+
 ## Features
 
-The `DatabaseConnection` class provides:
-
-- Support for both thick (cx_Oracle) and thin (oracledb) client modes
-- Connection pooling via SQLAlchemy
-- DataFrame integration with pandas
-- Bulk data operations
-- Context manager support
-- Parameterized queries
-- Transaction management
+- **Offline Installation**: All dependencies included as wheel files
+- **Platform Support**: Compatible with Windows, Linux, and macOS
+- **Connection Modes**: Support for both thick and thin mode
+- **Data Handling**: Pandas DataFrame support
+- **Bulk Operations**: Efficient bulk insert capabilities
+- **Error Handling**: Comprehensive error handling and logging
+- **Connection Pooling**: Efficient connection management
+- **Security**: Secure password handling and connection encryption
 
 ## Dependencies
 
-- cx-Oracle==8.3.0
+Core dependencies are included as wheel files in the `wheels/` directory:
 - oracledb==1.4.2
-- SQLAlchemy==2.0.27
 - pandas==2.2.1
 - numpy==1.26.4
-- python-dotenv==1.0.1
-- typing-extensions==4.9.0
-- greenlet==3.0.3
+- SQLAlchemy==2.0.27
+- Additional dependencies for Excel support, performance optimization, and security
 
 ## Error Handling
 
-The package includes comprehensive error handling for:
+The package includes comprehensive error handling:
 - Connection failures
 - Query execution errors
-- Resource cleanup
-- Data type mismatches
-- Transaction issues
+- Bulk insert failures
+- Environment configuration issues
+- Platform-specific errors
 
 ## Best Practices
 
-1. Always use context managers or explicitly close connections
-2. Use parameterized queries to prevent SQL injection
-3. Handle large datasets in batches
-4. Set appropriate timeouts for long-running operations
-5. Monitor connection pool usage
+1. **Connection Management**:
+   ```python
+   # Use context manager for automatic cleanup
+   with DatabaseConnection() as db:
+       # Your database operations
+       pass
+   ```
+
+2. **Query Execution**:
+   ```python
+   # Use parameterized queries
+   result = db.query_to_df(
+       "SELECT * FROM table WHERE column = :1",
+       params=['value']
+   )
+   ```
+
+3. **Bulk Operations**:
+   ```python
+   # Use bulk_insert for large datasets
+   db.bulk_insert('table_name', dataframe)
+   ```
+
+4. **Resource Cleanup**:
+   ```python
+   # Always close connections
+   db.close()
+   ```
 
 ## Troubleshooting
 
-Common issues and solutions:
-
-1. **Connection Errors**
-   - Verify host, port, and service name
+1. **Connection Issues**:
+   - Verify network connectivity
    - Check firewall settings
-   - Ensure Oracle client libraries are accessible
-   - For Windows: Check PATH environment variable includes Oracle Client directory
-   - For macOS/Linux: Check ORACLE_HOME environment variable is set correctly
+   - Validate credentials
+   - Confirm Oracle service status
 
-2. **Authentication Issues**
-   - Verify username and password
-   - Check account locks and expiration
-   - Confirm database privileges
+2. **Thick Mode Problems**:
+   - Verify Instant Client installation
+   - Check library path configuration
+   - Validate Oracle client version
 
-3. **Performance Issues**
-   - Monitor connection pool settings
-   - Review query optimization
-   - Check network latency
-
-4. **Platform-Specific Issues**
-   - Windows: Ensure Oracle Client is 64-bit if using 64-bit Python
-   - macOS: Check Oracle Client architecture matches Python architecture
-   - Linux: Verify Oracle Client libraries are in the correct location
+3. **Performance Issues**:
+   - Enable connection pooling
+   - Use bulk operations for large datasets
+   - Optimize query execution
 
 ## Support
 
-For issues and questions:
-1. Check the troubleshooting section
-2. Review Oracle documentation
-3. Contact your database administrator 
+For issues and support:
+1. Check the troubleshooting guide
+2. Review error messages
+3. Verify configuration
+4. Contact system administrator
+
+## License
+
+This package is proprietary and confidential. 
