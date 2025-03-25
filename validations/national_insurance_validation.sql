@@ -54,30 +54,33 @@ END;
 -- Create procedure to copy table and add validation columns
 CREATE OR REPLACE PROCEDURE create_nino_clean_copy
 IS
+   v_sql VARCHAR2(4000);
 BEGIN
    -- Drop the table if it exists
    BEGIN
-       EXECUTE IMMEDIATE 'DROP TABLE per_nino_clean';
+       v_sql := 'DROP TABLE per_nino_clean';
+       EXECUTE IMMEDIATE v_sql;
    EXCEPTION
        WHEN OTHERS THEN
            IF SQLCODE != -942 THEN  -- Table doesn't exist
                RAISE;
            END IF;
    END;
-
+   
    -- Create new table with selected columns and validation columns
-   EXECUTE IMMEDIATE '
+   v_sql := '
        CREATE TABLE per_nino_clean AS
        SELECT
            person_id,
            employee_number,
            national_identifier,
-           ''PENDING'' as nino_validation_status,
-           NULL as nino_validation_message,
+           CAST(''PENDING'' AS VARCHAR2(20)) as nino_validation_status,
+           CAST(NULL AS VARCHAR2(4000)) as nino_validation_message,
            SYSDATE as dq_copy
        FROM per_all_people_f
        WHERE national_identifier IS NOT NULL
        AND LENGTH(TRIM(national_identifier)) > 0';
+   EXECUTE IMMEDIATE v_sql;
 
    DBMS_OUTPUT.PUT_LINE('Table per_nino_clean created successfully with ' ||
        TO_CHAR((SELECT COUNT(*) FROM per_nino_clean)) || ' records.');
@@ -320,10 +323,13 @@ END suggest_nino_fix;
 CREATE OR REPLACE PROCEDURE add_nino_suggestions
 IS
    v_suggestion_count NUMBER := 0;
+   v_sql VARCHAR2(4000);
+   v_suggested_nino VARCHAR2(11);
 BEGIN
    -- Add column for suggested fixes if it doesn't exist
    BEGIN
-       EXECUTE IMMEDIATE 'ALTER TABLE per_nino_clean ADD (suggested_nino VARCHAR2(11))';
+       v_sql := 'ALTER TABLE per_nino_clean ADD (suggested_nino VARCHAR2(11))';
+       EXECUTE IMMEDIATE v_sql;
    EXCEPTION
        WHEN OTHERS THEN
            IF SQLCODE != -1430 THEN  -- Column already exists
@@ -331,12 +337,37 @@ BEGIN
            END IF;
    END;
    
-   -- Add suggestions for invalid NINOs
-   UPDATE per_nino_clean
-   SET suggested_nino = suggest_nino_fix(national_identifier)
-   WHERE nino_validation_status = 'INVALID'
-   AND suggest_nino_fix(national_identifier) IS NOT NULL
-   RETURNING COUNT(*) INTO v_suggestion_count;
+   -- Add suggestions for invalid NINOs using a cursor
+   FOR r IN (
+       SELECT person_id, national_identifier
+       FROM per_nino_clean
+       WHERE nino_validation_status = 'INVALID'
+   ) LOOP
+       BEGIN
+           -- Get the suggested fix first
+           v_suggested_nino := suggest_nino_fix(r.national_identifier);
+           
+           -- Only update if we have a valid suggestion
+           IF v_suggested_nino IS NOT NULL THEN
+               v_sql := 'UPDATE per_nino_clean 
+                         SET suggested_nino = :1 
+                         WHERE person_id = :2 
+                         AND national_identifier = :3';
+               EXECUTE IMMEDIATE v_sql 
+               USING v_suggested_nino, r.person_id, r.national_identifier;
+               
+               -- Only increment counter if update was successful
+               IF SQL%ROWCOUNT > 0 THEN
+                   v_suggestion_count := v_suggestion_count + 1;
+               END IF;
+           END IF;
+       EXCEPTION
+           WHEN OTHERS THEN
+               DBMS_OUTPUT.PUT_LINE('Error processing NINO for person_id ' || r.person_id || ': ' || SQLERRM);
+               -- Continue with next record
+               CONTINUE;
+       END;
+   END LOOP;
    
    -- Log the suggestion results
    INSERT INTO per_nino_validation_log
@@ -408,3 +439,20 @@ FROM per_nino_clean
 WHERE nino_validation_status IN ('ADMINISTRATIVE', 'TEMPORARY')
 ORDER BY nino_validation_status, employee_number;
 */
+
+-- Add table comments after all objects are created
+COMMENT ON TABLE per_nino_validation_log IS 'Log table tracking all NINO validation operations';
+COMMENT ON COLUMN per_nino_validation_log.log_id IS 'Unique identifier for the log entry';
+COMMENT ON COLUMN per_nino_validation_log.operation IS 'Type of validation operation performed';
+COMMENT ON COLUMN per_nino_validation_log.field_name IS 'Name of the field being validated';
+COMMENT ON COLUMN per_nino_validation_log.operation_date IS 'Timestamp when the operation was performed';
+COMMENT ON COLUMN per_nino_validation_log.records_affected IS 'Number of records affected by the operation';
+
+COMMENT ON TABLE per_nino_clean IS 'Cleansed version of NINOs with validation flags';
+COMMENT ON COLUMN per_nino_clean.person_id IS 'Unique identifier for the person';
+COMMENT ON COLUMN per_nino_clean.employee_number IS 'Employee number for the person';
+COMMENT ON COLUMN per_nino_clean.national_identifier IS 'The NINO value';
+COMMENT ON COLUMN per_nino_clean.nino_validation_status IS 'Status of NINO validation (VALID, INVALID, ADMINISTRATIVE, TEMPORARY)';
+COMMENT ON COLUMN per_nino_clean.nino_validation_message IS 'Detailed message explaining validation result';
+COMMENT ON COLUMN per_nino_clean.dq_copy IS 'Timestamp when the record was copied for cleansing';
+COMMENT ON COLUMN per_nino_clean.suggested_nino IS 'Suggested corrected version of invalid NINO';

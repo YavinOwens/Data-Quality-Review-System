@@ -47,8 +47,89 @@ END;
 -- Create procedure to generate the DQ review table
 CREATE OR REPLACE PROCEDURE generate_dq_review_table
 IS
-   v_record_count NUMBER := 0;
+   v_record_count NUMBER;
+   v_table_exists NUMBER;
+   v_missing_tables VARCHAR2(4000);
 BEGIN
+   -- Initialize variables
+   v_record_count := 0;
+   v_table_exists := 0;
+   v_missing_tables := '';
+   
+   -- Check if source tables exist
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM hr.per_all_people_f' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'hr.per_all_people_f, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM hr.per_person_type_usages_f' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'hr.per_person_type_usages_f, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM hr.per_person_types' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'hr.per_person_types, ';
+   END;
+
+   -- Check if validation tables exist
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM per_names_clean' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'per_names_clean, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM per_email_addresses_clean' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'per_email_addresses_clean, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM per_dob_clean' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'per_dob_clean, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM per_nino_clean' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'per_nino_clean, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM clean_addresses' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'clean_addresses, ';
+   END;
+
+   BEGIN
+       EXECUTE IMMEDIATE 'SELECT COUNT(*) FROM address_validation_results' INTO v_table_exists;
+   EXCEPTION
+       WHEN OTHERS THEN
+           v_missing_tables := v_missing_tables || 'address_validation_results, ';
+   END;
+
+   -- If any tables are missing, raise an error with details
+   IF v_missing_tables IS NOT NULL THEN
+       v_missing_tables := RTRIM(v_missing_tables, ', ');
+       DBMS_OUTPUT.PUT_LINE('Error: The following tables do not exist or are not accessible:');
+       DBMS_OUTPUT.PUT_LINE(v_missing_tables);
+       DBMS_OUTPUT.PUT_LINE('Please ensure all required tables exist before running this procedure.');
+       RAISE_APPLICATION_ERROR(-20001, 'Missing required tables: ' || v_missing_tables);
+   END IF;
+
    -- Drop the table if it exists
    BEGIN
        EXECUTE IMMEDIATE 'DROP TABLE dq_review';
@@ -59,7 +140,7 @@ BEGIN
            END IF;
    END;
 
-   -- Create the DQ review table with masked personal information
+   -- Create the DQ review table with masked personal information and validation flags
    EXECUTE IMMEDIATE '
        CREATE TABLE dq_review AS
        SELECT 
@@ -96,12 +177,41 @@ BEGIN
                NULL
            ) as masked_known_as,
            COUNT(DISTINCT ppt.user_person_type) as person_type_count,
-           LISTAGG(ppt.user_person_type, '', '') WITHIN GROUP (ORDER BY ppt.user_person_type) as person_types,
+           LISTAGG(DISTINCT ppt.user_person_type, '', '') WITHIN GROUP (ORDER BY ppt.user_person_type) as person_types,
+           -- Name validation flags
+           NVL(pnc.has_name_inconsistency, ''N'') as has_name_issues,
+           NVL(pnc.has_missing_required, ''N'') as has_missing_name,
+           -- Email validation flags
+           CASE WHEN peac.email_validation_status IN (''INVALID'', ''DUPLICATE'') THEN ''Y'' ELSE ''N'' END as has_email_issues,
+           -- DOB validation flags
+           CASE WHEN pdc.dob_validation_status NOT IN (''VALID'', ''SENIOR'') THEN ''Y'' ELSE ''N'' END as has_dob_issues,
+           -- NINO validation flags
+           CASE WHEN pnino.nino_validation_status NOT IN (''VALID'') THEN ''Y'' ELSE ''N'' END as has_nino_issues,
+           -- Address validation flags (if available)
+           CASE WHEN ca.is_valid = ''N'' OR avr.postal_code_status = ''Invalid'' OR avr.missing_house_number = ''Yes'' 
+                THEN ''Y'' ELSE ''N'' END as has_address_issues,
+           -- Validation messages
+           CASE 
+               WHEN pnc.has_name_inconsistency = ''Y'' OR pnc.has_missing_required = ''Y'' THEN ''Name issues detected''
+               WHEN peac.email_validation_status IN (''INVALID'', ''DUPLICATE'') THEN ''Email issues detected''
+               WHEN pdc.dob_validation_status NOT IN (''VALID'', ''SENIOR'') THEN ''DOB issues detected''
+               WHEN pnino.nino_validation_status NOT IN (''VALID'') THEN ''NINO issues detected''
+               WHEN ca.is_valid = ''N'' OR avr.postal_code_status = ''Invalid'' OR avr.missing_house_number = ''Yes'' 
+               THEN ''Address issues detected''
+               ELSE NULL 
+           END as validation_comments,
            SYSDATE as creation_date
        FROM 
-           per_all_people_f papf, 
-           per_person_type_usages_f pptu, 
-           per_person_types ppt
+           hr.per_all_people_f papf, 
+           hr.per_person_type_usages_f pptu, 
+           hr.per_person_types ppt,
+           -- Join with validation tables
+           per_names_clean pnc,
+           per_email_addresses_clean peac,
+           per_dob_clean pdc,
+           per_nino_clean pnino,
+           clean_addresses ca,
+           address_validation_results avr
        WHERE 
            papf.person_id = pptu.person_id 
            AND papf.effective_start_date <= SYSDATE 
@@ -110,13 +220,28 @@ BEGIN
            AND pptu.effective_end_date >= SYSDATE 
            AND pptu.person_type_id = ppt.person_type_id 
            AND papf.current_employee_flag = ''Y''
+           -- Join conditions for validation tables
+           AND papf.person_id = pnc.person_id(+)
+           AND papf.person_id = peac.person_id(+)
+           AND papf.person_id = pdc.person_id(+)
+           AND papf.person_id = pnino.person_id(+)
+           AND papf.person_id = ca.employee_id(+)
+           AND papf.person_id = avr.row_number(+)
        GROUP BY 
            papf.person_id, 
            papf.employee_number,
            papf.first_name,
            papf.middle_names,
            papf.last_name,
-           papf.known_as
+           papf.known_as,
+           pnc.has_name_inconsistency,
+           pnc.has_missing_required,
+           peac.email_validation_status,
+           pdc.dob_validation_status,
+           pnino.nino_validation_status,
+           ca.is_valid,
+           avr.postal_code_status,
+           avr.missing_house_number
        HAVING 
            COUNT(DISTINCT ppt.user_person_type) > 0
        ORDER BY 
@@ -144,289 +269,105 @@ EXCEPTION
 END generate_dq_review_table;
 /
 
--- Create procedure to add validation flags to DQ review
-CREATE OR REPLACE PROCEDURE add_dq_validation_flags
-IS
-   v_records_updated NUMBER := 0;
-BEGIN
-   -- Add validation columns if they don't exist
-   BEGIN
-       EXECUTE IMMEDIATE 'ALTER TABLE dq_review ADD (
-           has_name_issues VARCHAR2(1) DEFAULT ''N'',
-           has_email_issues VARCHAR2(1) DEFAULT ''N'',
-           has_address_issues VARCHAR2(1) DEFAULT ''N'',
-           has_dob_issues VARCHAR2(1) DEFAULT ''N'',
-           has_nino_issues VARCHAR2(1) DEFAULT ''N'',
-           validation_comments CLOB
-       )';
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -1430 THEN  -- Column already exists
-               RAISE;
-           END IF;
-   END;
-   
-   -- Update name issues based on per_names_clean
-   BEGIN
-       EXECUTE IMMEDIATE '
-           UPDATE dq_review dr
-           SET has_name_issues = ''Y'',
-               validation_comments = CASE 
-                   WHEN validation_comments IS NULL THEN ''Name issues detected''
-                   ELSE validation_comments || ''; Name issues detected'' 
-               END
-           WHERE EXISTS (
-               SELECT 1 FROM per_names_clean pnc
-               WHERE pnc.person_id = dr.person_id
-               AND (pnc.has_name_inconsistency = ''Y'' OR pnc.has_missing_required = ''Y'')
-           )'
-           RETURNING COUNT(*) INTO v_records_updated;
-       
-       DBMS_OUTPUT.PUT_LINE('Updated ' || v_records_updated || ' records with name issues');
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN  -- Table doesn't exist
-               DBMS_OUTPUT.PUT_LINE('Name validation table not found, skipping...');
-           ELSE
-               RAISE;
-           END IF;
-   END;
-   
-   -- Update email issues based on per_emails_clean
-   BEGIN
-       EXECUTE IMMEDIATE '
-           UPDATE dq_review dr
-           SET has_email_issues = ''Y'',
-               validation_comments = CASE 
-                   WHEN validation_comments IS NULL THEN ''Email issues detected''
-                   ELSE validation_comments || ''; Email issues detected'' 
-               END
-           WHERE EXISTS (
-               SELECT 1 FROM per_emails_clean pec
-               WHERE pec.person_id = dr.person_id
-               AND pec.email_validation_status IN (''INVALID'', ''DUPLICATE'')
-           )'
-           RETURNING COUNT(*) INTO v_records_updated;
-       
-       DBMS_OUTPUT.PUT_LINE('Updated ' || v_records_updated || ' records with email issues');
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN  -- Table doesn't exist
-               DBMS_OUTPUT.PUT_LINE('Email validation table not found, skipping...');
-           ELSE
-               RAISE;
-           END IF;
-   END;
-   
-   -- Update address issues based on per_addresses_clean
-   BEGIN
-       EXECUTE IMMEDIATE '
-           UPDATE dq_review dr
-           SET has_address_issues = ''Y'',
-               validation_comments = CASE 
-                   WHEN validation_comments IS NULL THEN ''Address issues detected''
-                   ELSE validation_comments || ''; Address issues detected'' 
-               END
-           WHERE EXISTS (
-               SELECT 1 FROM per_addresses_clean pac
-               WHERE pac.person_id = dr.person_id
-               AND (pac.is_incomplete_address = ''Y'' OR pac.is_valid_uk_postcode = ''N'')
-           )'
-           RETURNING COUNT(*) INTO v_records_updated;
-       
-       DBMS_OUTPUT.PUT_LINE('Updated ' || v_records_updated || ' records with address issues');
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN  -- Table doesn't exist
-               DBMS_OUTPUT.PUT_LINE('Address validation table not found, skipping...');
-           ELSE
-               RAISE;
-           END IF;
-   END;
-   
-   -- Update DOB issues based on per_dob_clean
-   BEGIN
-       EXECUTE IMMEDIATE '
-           UPDATE dq_review dr
-           SET has_dob_issues = ''Y'',
-               validation_comments = CASE 
-                   WHEN validation_comments IS NULL THEN ''DOB issues detected''
-                   ELSE validation_comments || ''; DOB issues detected'' 
-               END
-           WHERE EXISTS (
-               SELECT 1 FROM per_dob_clean pdc
-               WHERE pdc.person_id = dr.person_id
-               AND pdc.dob_validation_status NOT IN (''VALID'', ''SENIOR'')
-           )'
-           RETURNING COUNT(*) INTO v_records_updated;
-       
-       DBMS_OUTPUT.PUT_LINE('Updated ' || v_records_updated || ' records with DOB issues');
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN  -- Table doesn't exist
-               DBMS_OUTPUT.PUT_LINE('DOB validation table not found, skipping...');
-           ELSE
-               RAISE;
-           END IF;
-   END;
-   
-   -- Update NINO issues based on per_nino_clean
-   BEGIN
-       EXECUTE IMMEDIATE '
-           UPDATE dq_review dr
-           SET has_nino_issues = ''Y'',
-               validation_comments = CASE 
-                   WHEN validation_comments IS NULL THEN ''NINO issues detected''
-                   ELSE validation_comments || ''; NINO issues detected'' 
-               END
-           WHERE EXISTS (
-               SELECT 1 FROM per_nino_clean pnc
-               WHERE pnc.person_id = dr.person_id
-               AND pnc.nino_validation_status NOT IN (''VALID'')
-           )'
-           RETURNING COUNT(*) INTO v_records_updated;
-       
-       DBMS_OUTPUT.PUT_LINE('Updated ' || v_records_updated || ' records with NINO issues');
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN  -- Table doesn't exist
-               DBMS_OUTPUT.PUT_LINE('NINO validation table not found, skipping...');
-           ELSE
-               RAISE;
-           END IF;
-   END;
-   
-   COMMIT;
-   
-   -- Log the update
-   INSERT INTO dq_review_log
-       (operation, operation_date, records_affected)
-   VALUES
-       ('Add validation flags', SYSTIMESTAMP, v_records_updated);
-   
-   DBMS_OUTPUT.PUT_LINE('Added validation flags to DQ Review table');
-
-EXCEPTION
-   WHEN OTHERS THEN
-       ROLLBACK;
-       DBMS_OUTPUT.PUT_LINE('Error adding validation flags: ' || SQLERRM);
-       RAISE;
-END add_dq_validation_flags;
-/
-
 -- Procedure to generate summary statistics
-CREATE OR REPLACE PROCEDURE generate_dq_summary
-IS
+CREATE OR REPLACE PROCEDURE generate_dq_summary AS
+    v_total_records NUMBER;
+    v_issues_count NUMBER;
+    v_count NUMBER;
 BEGIN
-   -- Create a summary table if it doesn't exist
-   BEGIN
-       EXECUTE IMMEDIATE 'DROP TABLE dq_summary';
-   EXCEPTION
-       WHEN OTHERS THEN
-           IF SQLCODE != -942 THEN RAISE; END IF;
-   END;
-   
-   -- Create summary table with counts and percentages
-   EXECUTE IMMEDIATE '
-       CREATE TABLE dq_summary AS
-       SELECT
-           ''Total records'' as metric,
-           COUNT(*) as count,
-           100 as percentage
-       FROM dq_review
-       UNION ALL
-       SELECT
-           ''Records with name issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_name_issues = ''Y''
-       UNION ALL
-       SELECT
-           ''Records with email issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_email_issues = ''Y''
-       UNION ALL
-       SELECT
-           ''Records with address issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_address_issues = ''Y''
-       UNION ALL
-       SELECT
-           ''Records with DOB issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_dob_issues = ''Y''
-       UNION ALL
-       SELECT
-           ''Records with NINO issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_nino_issues = ''Y''
-       UNION ALL
-       SELECT
-           ''Records with multiple issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE (CASE WHEN has_name_issues = ''Y'' THEN 1 ELSE 0 END +
-              CASE WHEN has_email_issues = ''Y'' THEN 1 ELSE 0 END +
-              CASE WHEN has_address_issues = ''Y'' THEN 1 ELSE 0 END +
-              CASE WHEN has_dob_issues = ''Y'' THEN 1 ELSE 0 END +
-              CASE WHEN has_nino_issues = ''Y'' THEN 1 ELSE 0 END) > 1
-       UNION ALL
-       SELECT
-           ''Records with no issues'' as metric,
-           COUNT(*) as count,
-           ROUND(COUNT(*) * 100 / (SELECT COUNT(*) FROM dq_review), 2) as percentage
-       FROM dq_review
-       WHERE has_name_issues = ''N''
-         AND has_email_issues = ''N''
-         AND has_address_issues = ''N''
-         AND has_dob_issues = ''N''
-         AND has_nino_issues = ''N''
-       ORDER BY 
-           CASE 
-               WHEN metric = ''Total records'' THEN 1
-               WHEN metric = ''Records with no issues'' THEN 9
-               WHEN metric = ''Records with multiple issues'' THEN 8
-               ELSE 2
-           END';
-   
-   -- Log the creation
-   INSERT INTO dq_review_log
-       (operation, operation_date, records_affected)
-   VALUES
-       ('Create DQ Summary', SYSTIMESTAMP, 0);
-   
-   COMMIT;
-   
-   DBMS_OUTPUT.PUT_LINE('DQ Summary table created successfully');
+    -- Drop existing summary table if it exists
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP TABLE dq_summary';
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN RAISE; END IF;
+    END;
+
+    -- Create summary table
+    EXECUTE IMMEDIATE '
+    CREATE TABLE dq_summary AS
+    WITH issue_counts AS (
+        SELECT COUNT(*) as total_records,
+               SUM(CASE WHEN has_name_issues = ''Y'' OR has_email_issues = ''Y'' 
+                        OR has_address_issues = ''Y'' OR has_dob_issues = ''Y'' 
+                        OR has_nino_issues = ''Y'' THEN 1 ELSE 0 END) as records_with_issues,
+               SUM(CASE WHEN has_name_issues = ''Y'' THEN 1 ELSE 0 END) as name_issues,
+               SUM(CASE WHEN has_email_issues = ''Y'' THEN 1 ELSE 0 END) as email_issues,
+               SUM(CASE WHEN has_dob_issues = ''Y'' THEN 1 ELSE 0 END) as dob_issues,
+               SUM(CASE WHEN has_nino_issues = ''Y'' THEN 1 ELSE 0 END) as nino_issues,
+               SUM(CASE WHEN has_address_issues = ''Y'' THEN 1 ELSE 0 END) as address_issues
+        FROM dq_review
+    ),
+    person_type_issues AS (
+        SELECT person_types, COUNT(*) as issue_count
+        FROM dq_review
+        WHERE has_name_issues = ''Y''
+           OR has_email_issues = ''Y''
+           OR has_address_issues = ''Y''
+           OR has_dob_issues = ''Y''
+           OR has_nino_issues = ''Y''
+        GROUP BY person_types
+    ),
+    sample_records AS (
+        SELECT person_id, person_types, validation_comments
+        FROM dq_review
+        WHERE (has_name_issues = ''Y''
+           OR has_email_issues = ''Y''
+           OR has_address_issues = ''Y''
+           OR has_dob_issues = ''Y''
+           OR has_nino_issues = ''Y'')
+        AND ROWNUM <= 5
+    )
+    SELECT 
+        ic.total_records,
+        ic.records_with_issues,
+        ROUND((ic.records_with_issues / NULLIF(ic.total_records, 0)) * 100, 2) as percentage_with_issues,
+        ic.name_issues,
+        ic.email_issues,
+        ic.dob_issues,
+        ic.nino_issues,
+        ic.address_issues,
+        (SELECT LISTAGG(person_types || '': '' || issue_count, CHR(10)) 
+         FROM person_type_issues) as issues_by_person_type,
+        (SELECT LISTAGG(''Person ID: '' || person_id || '' | Type: '' || person_types || 
+                       '' | Issues: '' || validation_comments, CHR(10))
+         FROM sample_records) as sample_records
+    FROM issue_counts ic';
+
+    -- Log the creation
+    INSERT INTO dq_review_log
+        (operation, operation_date, records_affected)
+    VALUES
+        ('Create DQ Summary', SYSTIMESTAMP, 1);
+    
+    COMMIT;
+    
+    DBMS_OUTPUT.PUT_LINE('DQ Summary table created successfully.');
 
 EXCEPTION
-   WHEN OTHERS THEN
-       ROLLBACK;
-       DBMS_OUTPUT.PUT_LINE('Error creating DQ summary: ' || SQLERRM);
-       RAISE;
-END generate_dq_summary;
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.PUT_LINE('Error creating DQ Summary: ' || SQLERRM);
+        RAISE;
+END;
 /
 
 -- Execution syntax
 /*
--- Generate the DQ review table with masked data
-EXEC generate_dq_review_table;
+-- Required validation tables must be created first by running:
+-- 1. @date_of_birth_validation.sql
+-- 2. @email_validation.sql
+-- 3. @name_field_validation.sql
+-- 4. @national_insurance_validation.sql
 
--- Add validation flags (if validation tables exist)
-EXEC add_dq_validation_flags;
+-- Generate the DQ review table with masked data and validation flags
+EXEC generate_dq_review_table;
 
 -- Generate summary statistics
 EXEC generate_dq_summary;
+
+-- View the summary
+SELECT * FROM dq_summary;
 
 -- View all employees in the DQ review
 SELECT 
@@ -456,7 +397,4 @@ WHERE has_name_issues = 'Y'
    OR has_dob_issues = 'Y'
    OR has_nino_issues = 'Y'
 ORDER BY employee_number;
-
--- View DQ summary statistics
-SELECT * FROM dq_summary;
 */

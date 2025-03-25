@@ -1,7 +1,7 @@
 -- Purpose of this script is to perform comprehensive validation of all name fields in HR core data
 -- following the same structure as the existing validations.
 -- Table is called "per_all_people_f" with name fields.
--- This validation handles: first_name, middle_names, last_name, preferred_name, known_as
+-- This validation handles: first_name, middle_names, last_name, known_as
 -- Accounts for the fact that not all individuals will have all name fields populated
 
 -- Drop existing objects first
@@ -47,6 +47,14 @@ BEGIN
 END;
 /
 
+-- Add table and column comments for per_name_validation_log
+COMMENT ON TABLE per_name_validation_log IS 'Log table tracking all name field cleansing operations';
+COMMENT ON COLUMN per_name_validation_log.log_id IS 'Unique identifier for the log entry';
+COMMENT ON COLUMN per_name_validation_log.operation IS 'Type of cleansing operation performed';
+COMMENT ON COLUMN per_name_validation_log.field_name IS 'Name of the field being cleansed';
+COMMENT ON COLUMN per_name_validation_log.operation_date IS 'Timestamp when the operation was performed';
+COMMENT ON COLUMN per_name_validation_log.records_affected IS 'Number of records affected by the operation';
+
 -- This process will be done in four parts:
 -- Part 1
 -- 1. Create a copy of the name data called "per_names_clean"
@@ -84,7 +92,6 @@ BEGIN
            middle_names,
            last_name,
            NVL(known_as, '''') as known_as,
-           NVL(preferred_name, '''') as preferred_name,
            SYSDATE as dq_copy
        FROM per_all_people_f';
 
@@ -97,6 +104,16 @@ EXCEPTION
 END create_names_clean_copy;
 /
 
+-- Add table and column comments for per_names_clean after its creation
+COMMENT ON TABLE per_names_clean IS 'Cleansed version of name fields with validation flags';
+COMMENT ON COLUMN per_names_clean.person_id IS 'Unique identifier for the person';
+COMMENT ON COLUMN per_names_clean.employee_number IS 'Employee identifier';
+COMMENT ON COLUMN per_names_clean.first_name IS 'Person''s first name';
+COMMENT ON COLUMN per_names_clean.middle_names IS 'Person''s middle name(s)';
+COMMENT ON COLUMN per_names_clean.last_name IS 'Person''s last name';
+COMMENT ON COLUMN per_names_clean.known_as IS 'Name the person is commonly known by';
+COMMENT ON COLUMN per_names_clean.dq_copy IS 'Timestamp when the record was copied for cleansing';
+
 -- Create procedure to standardize case for name fields
 CREATE OR REPLACE PROCEDURE standardize_name_case
 IS
@@ -104,7 +121,6 @@ IS
    v_middle_names_affected NUMBER := 0;
    v_last_name_affected NUMBER := 0;
    v_known_as_affected NUMBER := 0;
-   v_preferred_name_affected NUMBER := 0;
 BEGIN
    -- Proper case for first_name (first letter uppercase, rest lowercase)
    UPDATE per_names_clean
@@ -167,22 +183,6 @@ BEGIN
            ('Standardize case', 'KNOWN_AS', SYSTIMESTAMP, v_known_as_affected);
    END IF;
 
-   -- Proper case for preferred_name
-   UPDATE per_names_clean
-   SET preferred_name = INITCAP(TRIM(preferred_name))
-   WHERE preferred_name IS NOT NULL
-   AND preferred_name != ''
-   AND (INITCAP(TRIM(preferred_name)) != preferred_name)
-   RETURNING COUNT(*) INTO v_preferred_name_affected;
-
-   -- Log preferred_name changes
-   IF v_preferred_name_affected > 0 THEN
-       INSERT INTO per_name_validation_log
-           (operation, field_name, operation_date, records_affected)
-       VALUES
-           ('Standardize case', 'PREFERRED_NAME', SYSTIMESTAMP, v_preferred_name_affected);
-   END IF;
-
    COMMIT;
    
    -- Output detailed results
@@ -191,10 +191,9 @@ BEGIN
    DBMS_OUTPUT.PUT_LINE('- Middle names standardized: ' || v_middle_names_affected);
    DBMS_OUTPUT.PUT_LINE('- Last names standardized: ' || v_last_name_affected);
    DBMS_OUTPUT.PUT_LINE('- Known as standardized: ' || v_known_as_affected);
-   DBMS_OUTPUT.PUT_LINE('- Preferred names standardized: ' || v_preferred_name_affected);
    DBMS_OUTPUT.PUT_LINE('Total records affected: ' ||
        (v_first_name_affected + v_middle_names_affected + v_last_name_affected + 
-        v_known_as_affected + v_preferred_name_affected));
+        v_known_as_affected));
 
 EXCEPTION
    WHEN OTHERS THEN
@@ -291,11 +290,12 @@ END clean_name_patterns;
 CREATE OR REPLACE PROCEDURE check_name_consistency
 IS
    v_known_as_updated NUMBER := 0;
-   v_preferred_name_updated NUMBER := 0;
+   v_sql VARCHAR2(4000);
 BEGIN
    -- Create a column to flag records with name field inconsistencies
    BEGIN
-       EXECUTE IMMEDIATE 'ALTER TABLE per_names_clean ADD (has_name_inconsistency VARCHAR2(1) DEFAULT ''N'')';
+       v_sql := 'ALTER TABLE per_names_clean ADD (has_name_inconsistency VARCHAR2(1) DEFAULT ''N'')';
+       EXECUTE IMMEDIATE v_sql;
    EXCEPTION
        WHEN OTHERS THEN
            IF SQLCODE != -1430 THEN  -- Column already exists
@@ -303,56 +303,14 @@ BEGIN
            END IF;
    END;
    
-   -- If known_as is empty but preferred_name exists, use preferred_name as known_as
-   UPDATE per_names_clean
-   SET known_as = preferred_name,
-       has_name_inconsistency = 'Y'
-   WHERE (known_as IS NULL OR known_as = '')
-   AND preferred_name IS NOT NULL
-   AND preferred_name != ''
-   RETURNING COUNT(*) INTO v_known_as_updated;
-   
-   -- Log the known_as updates
-   IF v_known_as_updated > 0 THEN
-       INSERT INTO per_name_validation_log
-           (operation, field_name, operation_date, records_affected)
-       VALUES
-           ('Update empty known_as', 'KNOWN_AS', SYSTIMESTAMP, v_known_as_updated);
-   END IF;
-   
-   -- If preferred_name is empty but known_as exists, use known_as as preferred_name
-   UPDATE per_names_clean
-   SET preferred_name = known_as,
-       has_name_inconsistency = 'Y'
-   WHERE (preferred_name IS NULL OR preferred_name = '')
-   AND known_as IS NOT NULL
-   AND known_as != ''
-   RETURNING COUNT(*) INTO v_preferred_name_updated;
-   
-   -- Log the preferred_name updates
-   IF v_preferred_name_updated > 0 THEN
-       INSERT INTO per_name_validation_log
-           (operation, field_name, operation_date, records_affected)
-       VALUES
-           ('Update empty preferred_name', 'PREFERRED_NAME', SYSTIMESTAMP, v_preferred_name_updated);
-   END IF;
-   
-   -- Flag records where known_as or preferred_name matches first_name or part of full name
-   UPDATE per_names_clean
-   SET has_name_inconsistency = 'N'
-   WHERE has_name_inconsistency = 'Y'
-   AND (
-       (known_as = first_name) OR
-       (preferred_name = first_name) OR
-       (known_as = SUBSTR(first_name, 1, 1) || SUBSTR(last_name, 1)) OR
-       (preferred_name = SUBSTR(first_name, 1, 1) || SUBSTR(last_name, 1))
-   );
+   -- Flag records where known_as matches first_name or part of full name
+   v_sql := 'UPDATE per_names_clean SET has_name_inconsistency = ''N'' WHERE has_name_inconsistency = ''Y'' AND (known_as = first_name OR known_as = SUBSTR(first_name, 1, 1) || SUBSTR(last_name, 1))';
+   EXECUTE IMMEDIATE v_sql;
    
    COMMIT;
    
    DBMS_OUTPUT.PUT_LINE('Name consistency check complete:');
    DBMS_OUTPUT.PUT_LINE('- Known as fields updated: ' || v_known_as_updated);
-   DBMS_OUTPUT.PUT_LINE('- Preferred name fields updated: ' || v_preferred_name_updated);
 
 EXCEPTION
    WHEN OTHERS THEN
@@ -362,14 +320,19 @@ EXCEPTION
 END check_name_consistency;
 /
 
+-- Add column comment for has_name_inconsistency after it's created
+COMMENT ON COLUMN per_names_clean.has_name_inconsistency IS 'Flag indicating if name fields have inconsistencies (Y/N)';
+
 -- Create procedure to validate required name fields
 CREATE OR REPLACE PROCEDURE validate_required_names
 IS
    v_affected_rows NUMBER := 0;
+   v_sql VARCHAR2(4000);
 BEGIN
    -- Create column to track records with missing required fields
    BEGIN
-       EXECUTE IMMEDIATE 'ALTER TABLE per_names_clean ADD (has_missing_required VARCHAR2(1) DEFAULT ''N'')';
+       v_sql := 'ALTER TABLE per_names_clean ADD (has_missing_required VARCHAR2(1) DEFAULT ''N'')';
+       EXECUTE IMMEDIATE v_sql;
    EXCEPTION
        WHEN OTHERS THEN
            IF SQLCODE != -1430 THEN  -- Column already exists
@@ -378,13 +341,12 @@ BEGIN
    END;
    
    -- Identify records missing required name fields (first_name and last_name)
-   UPDATE per_names_clean
-   SET has_missing_required = 'Y'
-   WHERE first_name IS NULL
-   OR last_name IS NULL
-   OR TRIM(first_name) = ''
-   OR TRIM(last_name) = ''
-   RETURNING COUNT(*) INTO v_affected_rows;
+   v_sql := 'UPDATE per_names_clean SET has_missing_required = ''Y'' WHERE first_name IS NULL OR last_name IS NULL OR TRIM(first_name) = '''' OR TRIM(last_name) = ''''';
+   EXECUTE IMMEDIATE v_sql;
+   
+   -- Get count of affected rows
+   v_sql := 'SELECT COUNT(*) FROM per_names_clean WHERE has_missing_required = ''Y''';
+   EXECUTE IMMEDIATE v_sql INTO v_affected_rows;
    
    -- Log the validation operation
    INSERT INTO per_name_validation_log
@@ -404,6 +366,9 @@ EXCEPTION
        RAISE;
 END validate_required_names;
 /
+
+-- Add column comment for has_missing_required after it's created
+COMMENT ON COLUMN per_names_clean.has_missing_required IS 'Flag indicating if required name fields are missing (Y/N)';
 
 -- Execution syntax
 /*
@@ -442,8 +407,7 @@ SELECT
     first_name,
     middle_names,
     last_name,
-    known_as,
-    preferred_name
+    known_as
 FROM per_names_clean
 WHERE has_name_inconsistency = 'Y';
 
@@ -451,7 +415,6 @@ WHERE has_name_inconsistency = 'Y';
 SELECT 
     COUNT(*) as total_records,
     SUM(CASE WHEN middle_names IS NOT NULL AND TRIM(middle_names) != '' THEN 1 ELSE 0 END) as with_middle_names,
-    SUM(CASE WHEN known_as IS NOT NULL AND TRIM(known_as) != '' THEN 1 ELSE 0 END) as with_known_as,
-    SUM(CASE WHEN preferred_name IS NOT NULL AND TRIM(preferred_name) != '' THEN 1 ELSE 0 END) as with_preferred_name
+    SUM(CASE WHEN known_as IS NOT NULL AND TRIM(known_as) != '' THEN 1 ELSE 0 END) as with_known_as
 FROM per_names_clean;
 */

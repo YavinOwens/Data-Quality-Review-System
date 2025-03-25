@@ -9,11 +9,96 @@
 
 SET SERVEROUTPUT ON;
 
+-- ======================================================================
+-- SECTION 1: ADDRESS VALIDATION
+-- ======================================================================
+
+-- Create transformation log and clean address table
+EXEC create_transformation_log;
+EXEC create_clean_address_table;
+
+-- Populate and validate addresses
+EXEC populate_clean_addresses;
+EXEC validate_addresses;
+
+-- View the transformation log by operation:
+SELECT 
+    transformation_name,
+    operation_type,
+    field_name,
+    record_id,
+    status,
+    created_date
+FROM transformation_log
+ORDER BY created_date;
+
+-- View summary of address validation results:
+SELECT 
+    postal_code_status,
+    COUNT(*) as count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) as percentage
+FROM address_validation_results
+GROUP BY postal_code_status
+ORDER BY COUNT(*) DESC;
+
+-- View addresses with missing house numbers:
+SELECT 
+    row_number,
+    full_address,
+    address_line1,
+    postal_code,
+    missing_house_number,
+    postal_code_status
+FROM address_validation_results
+WHERE missing_house_number = 'Yes'
+ORDER BY row_number;
+
+-- View postal code validation by town/city:
+SELECT 
+    town_or_city,
+    valid_count,
+    invalid_count,
+    valid_percentage,
+    invalid_percentage,
+    assessed_count
+FROM address_validation_results
+GROUP BY 
+    town_or_city,
+    valid_count,
+    invalid_count,
+    valid_percentage,
+    invalid_percentage,
+    assessed_count
+ORDER BY invalid_percentage DESC;
+
+-- View addresses with validation issues:
+SELECT 
+    row_number,
+    full_address,
+    postal_code,
+    postal_code_status,
+    missing_house_number,
+    address_status
+FROM address_validation_results
+WHERE postal_code_status = 'Invalid'
+   OR missing_house_number = 'Yes'
+ORDER BY row_number;
+
+-- View clean addresses with validation flags:
+SELECT 
+    ca.employee_id,
+    ca.full_address,
+    ca.post_code,
+    ca.is_valid,
+    ca.validation_errors,
+    ca.created_date
+FROM clean_addresses ca
+WHERE ca.is_valid = 'N'
+ORDER BY ca.employee_id;
 
 -- ======================================================================
--- SECTION 1: ORIGINAL VALIDATIONS
+-- SECTION 2: ORIGINAL VALIDATIONS
 -- ======================================================================
-PROMPT *** Running Original Validations ***
 
 -- Create a copy of the people table with today's date
 SELECT * FROM per_all_people_f_clean;
@@ -44,9 +129,8 @@ FROM per_all_people_f_clean
 OFFSET 11 ROWS;
 
 -- ======================================================================
--- SECTION 2: NAME FIELD VALIDATION
+-- SECTION 3: NAME FIELD VALIDATION
 -- ======================================================================
-PROMPT *** Running Name Field Validation ***
 
 -- Create a copy of the table with today's date
 EXEC create_names_clean_copy;
@@ -97,9 +181,8 @@ SELECT
 FROM per_names_clean;
 
 -- ======================================================================
--- SECTION 3: EMAIL VALIDATION
+-- SECTION 4: EMAIL VALIDATION
 -- ======================================================================
-PROMPT *** Running Email Validation ***
 
 -- Create a copy of the email data
 EXEC create_emails_clean_copy;
@@ -143,60 +226,8 @@ HAVING COUNT(*) > 1
 ORDER BY COUNT(*) DESC;
 
 -- ======================================================================
--- SECTION 4: UK ADDRESS VALIDATION
--- ======================================================================
-PROMPT *** Running UK Address Validation ***
-
--- Create a copy of the address data (filtered for UKI only)
-EXEC create_addresses_clean_copy;
-
--- Run address validation procedures
-EXEC standardize_uk_counties;
-EXEC validate_uk_postcodes;
-EXEC identify_incomplete_addresses;
-
--- View address validation log
-SELECT operation, field_name, records_affected, operation_date
-FROM per_address_validation_log
-ORDER BY operation_date;
-
--- View addresses with invalid UK postcodes
-SELECT 
-    address_id,
-    address_line1,
-    address_line2,
-    town_or_city,
-    county,
-    postal_code
-FROM per_addresses_clean
-WHERE is_valid_uk_postcode = 'N'
-ORDER BY address_id;
-
--- View incomplete UK addresses
-SELECT 
-    address_id,
-    address_line1,
-    address_line2,
-    town_or_city,
-    county,
-    postal_code,
-    missing_components
-FROM per_addresses_clean
-WHERE is_incomplete_address = 'Y'
-ORDER BY address_id;
-
--- View summary of UK counties after standardization
-SELECT 
-    county,
-    COUNT(*) as address_count
-FROM per_addresses_clean
-GROUP BY county
-ORDER BY COUNT(*) DESC;
-
--- ======================================================================
 -- SECTION 5: JOB HISTORY VALIDATION
 -- ======================================================================
-PROMPT *** Running Job History Validation ***
 
 -- Create a copy of the job history data
 EXEC create_job_history_clean_copy;
@@ -246,7 +277,6 @@ ORDER BY employee_number, effective_start_date;
 -- ======================================================================
 -- SECTION 6: NATIONAL INSURANCE NUMBER VALIDATION
 -- ======================================================================
-PROMPT *** Running National Insurance Number Validation ***
 
 -- Create a copy of the table with relevant columns
 EXEC create_nino_clean_copy;
@@ -300,7 +330,6 @@ ORDER BY nino_validation_status, employee_number;
 -- ======================================================================
 -- SECTION 7: DATE OF BIRTH VALIDATION
 -- ======================================================================
-PROMPT *** Running Date of Birth Validation ***
 
 -- Create a copy of the table with relevant columns
 EXEC create_dob_clean_copy;
@@ -368,7 +397,6 @@ ORDER BY employee_number;
 -- ======================================================================
 -- SECTION 8: DATA QUALITY REVIEW
 -- ======================================================================
-PROMPT *** Running Data Quality Review ***
 
 -- Generate the DQ review table with masked data
 EXEC generate_dq_review_table;
@@ -414,7 +442,6 @@ SELECT * FROM dq_summary;
 -- ======================================================================
 -- SECTION 9: CONSOLIDATED ISSUES REPORT
 -- ======================================================================
-PROMPT *** Generating Consolidated Issues Report ***
 
 -- Create a consolidated issues view if it doesn't exist
 BEGIN
@@ -522,5 +549,3 @@ SELECT
 FROM consolidated_issues_view
 GROUP BY SUBSTR(issue_description, 1, INSTR(issue_description, ':'))
 ORDER BY COUNT(*) DESC;
-
-PROMPT *** All validation procedures executed successfully ***
